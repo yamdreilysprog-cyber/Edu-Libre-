@@ -1,0 +1,145 @@
+---
+import PublicLayout from '../layouts/PublicLayout.astro';
+
+const area = Astro.url.searchParams.get('area') || 'ingenieria';
+
+const areaTitles: Record<string, string> = {
+  ingenieria: 'Ingeniería y Tecnología',
+  salud: 'Ciencias de la Salud',
+  economia: 'Económicas y Sociales',
+  humanidades: 'Humanidades y Educación',
+  derecho: 'Jurídicas y Políticas',
+  agro: 'Ciencias del Agro y el Mar',
+  artes: 'Artes y Arquitectura',
+  artistica: 'Artes y Creatividad',
+  programacion: 'Programación y Software',
+  cursos: 'Cursos y Certificaciones',
+};
+
+const title = areaTitles[area] || area.charAt(0).toUpperCase() + area.slice(1);
+const apiUrl = process.env.API_URL || 'http://localhost:3000';
+
+let items: Array<{ inst: any; program: any }> = [];
+
+try {
+  const res = await fetch(`${apiUrl}/api/institutions?area=${encodeURIComponent(area)}&limit=20`);
+  if (res.ok) {
+    const data = await res.json();
+    if (data.data && Array.isArray(data.data)) {
+      for (const inst of data.data) {
+        if (inst.programs && Array.isArray(inst.programs)) {
+          for (const program of inst.programs) {
+            items.push({ inst, program });
+          }
+        }
+      }
+    }
+  }
+} catch (e) {
+  items = [];
+}
+---
+
+<PublicLayout title={`${title} — EduLibre`} description="" navVariant="full">
+<section class="area-hero">
+  <div class="wrap">
+    <span class="eyebrow mono">Área académica</span>
+    <h1>{title}</h1>
+    <p>Explora la oferta académica en {title.toLowerCase()} en instituciones de toda Venezuela.</p>
+    <div class="subfilters">
+      <a href={`/results?query=${encodeURIComponent(title)}`} class="subfilter-btn">Buscar en el catálogo general →</a>
+    </div>
+  </div>
+</section>
+
+<section class="program-list">
+  <div class="wrap">
+    {items.length === 0 ? (
+      <div class="empty-card">
+        <h3>No hay programas publicados actualmente en esta área</h3>
+        <p>Pronto se añadirán más opciones educativas para {title}.</p>
+        <a class="btn btn--solid" href="/results">Ver todas las carreras disponibles</a>
+      </div>
+    ) : (
+      items.map(({ inst, program }) => (
+        <div class="program-card">
+          <div class="program-info">
+            <h3><a href={`/curso?id=${program.id}&institutionId=${inst.id}`}>{program.name}</a></h3>
+            <span class="meta">{inst.name} · {[inst.ciudad, inst.estado].filter(Boolean).join(', ')} · {program.duration}</span>
+            <div class="program-card__tags">
+              <span class="badge badge--type">{program.type}</span>
+              <span class="badge badge--modality">{program.modality}</span>
+              {program.is_free && <span class="badge badge--free">Gratuita</span>}
+              {inst.gestion && <span class="badge badge--gestion">{inst.gestion}</span>}
+            </div>
+          </div>
+          <a class="btn btn--ghost btn--sm" href={`/curso?id=${program.id}&institutionId=${inst.id}`}>Ver detalle</a>
+        </div>
+      ))
+    )}
+  </div>
+</section>
+</PublicLayout>
+
+<style>
+  .area-hero { background: var(--navy); color: #fff; padding: 48px 0; }
+  .area-hero .eyebrow { color: #F0DDBB; }
+  .area-hero h1 { font-size: clamp(26px, 3.2vw, 36px); color: #fff; margin-bottom: 8px; }
+  .area-hero p { color: #C4D0E8; max-width: 600px; font-size: 15px; line-height: 1.6; }
+  .subfilters { margin-top: 18px; }
+  .subfilter-btn {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: #fff;
+    padding: 8px 18px;
+    border-radius: 999px;
+    font-size: 13.5px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.15s ease;
+  }
+  .subfilter-btn:hover { background: rgba(255, 255, 255, 0.22); }
+  .program-list { padding: 40px 0 72px; }
+  .program-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 22px;
+    margin-bottom: 12px;
+    gap: 16px;
+    box-shadow: 0 1px 3px rgba(20,33,61,0.03);
+  }
+  .program-info { flex: 1; }
+  .program-card h3 { font-size: 16.5px; margin: 0 0 4px 0; }
+  .program-card h3 a { color: var(--navy); text-decoration: none; font-weight: 700; }
+  .program-card h3 a:hover { color: var(--blue); }
+  .program-card .meta { font-size: 13.5px; color: var(--muted); display: block; margin-bottom: 8px; }
+  .program-card__tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  
+  .badge {
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .badge--type { background: #E8EEF9; color: var(--blue); }
+  .badge--modality { background: #F3EBF9; color: #6B348A; }
+  .badge--free { background: var(--green-bg); color: var(--green); }
+  .badge--gestion { background: var(--paper-dim); color: var(--ink); }
+
+  .empty-card {
+    background: #fff;
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 48px 24px;
+    text-align: center;
+    color: var(--muted);
+  }
+  .empty-card h3 { color: var(--navy); margin-bottom: 8px; }
+  .empty-card p { margin-bottom: 20px; }
+</style>

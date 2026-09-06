@@ -1,0 +1,94 @@
+---
+import PublicLayout from '../layouts/PublicLayout.astro';
+---
+<PublicLayout title="Iniciar sesión — EduLibre" description="" navVariant="login">
+<div class="auth-shell">
+<div class="form-card">
+<div class="auth-tabs"><a class="active" href="/login">Ingresar</a><a href="/registro">Crear cuenta</a></div>
+<h1 style="font-size:22px;margin-bottom:6px;">Bienvenido de vuelta</h1>
+<p style="color:var(--muted);font-size:14px;margin:0 0 22px;">Ingresa para ver tus favoritos y postulaciones.</p>
+<div id="verified-alert" style="display:none; background: var(--green-bg); color: var(--green); padding: 12px; border-radius: var(--radius-sm); margin-bottom: 20px; font-size: 14px; text-align: center;">
+  ¡Tu cuenta ha sido verificada exitosamente! Ya puedes iniciar sesión.
+</div>
+<form id="login-form">
+<div class="field"><label for="email">Correo electrónico</label><input id="email" name="email" placeholder="tu@correo.com" type="email" required/></div>
+<div class="field" style="position: relative;">
+<label for="pass">Contraseña</label>
+<div style="position: relative;">
+    <input id="pass" name="password" placeholder="••••••••" type="password" required style="padding-right: 40px;"/>
+    <button type="button" id="toggle-pass" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--muted); padding: 5px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path id="eye-icon" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+            <line id="eye-slash-line" x1="2" y1="2" x2="22" y2="22" style="display: none;"></line>
+        </svg>
+    </button>
+</div>
+<div class="hint"><a href="#" style="color:var(--blue);">¿Olvidaste tu contraseña?</a></div>
+</div>
+<div data-form-status></div>
+<button class="btn btn--solid" style="width:100%;margin-top:6px;" type="submit">Ingresar</button>
+</form>
+<div class="auth-divider">o continúa con</div>
+<button class="btn btn--ghost" style="width:100%;">Google</button>
+<p style="text-align:center;font-size:13.5px;color:var(--muted);margin-top:20px;">
+      ¿Eres institución? <a href="/registro-institucion" style="color:var(--blue);font-weight:600;">Regístrate aquí</a>
+</p>
+</div>
+</div>
+<script type="module">
+  // Eliminar la dependencia de supabase.auth directamente aquí
+  // o usarla solo para chequear, pero el login lo hacemos vía API Route
+  const loginForm = document.getElementById('login-form');
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const email = formData.get('email');
+    const password = formData.get('password');
+
+    const response = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+
+    const result = await response.json();
+    if (response.ok) {
+      // Guardar sesión manualmente después del login exitoso
+      localStorage.setItem('user_session', JSON.stringify({
+          isAuthenticated: true,
+          user: result.user,
+          token: result.token
+      }));
+      window.location.href = '/institucion/editor-sitio';
+    } else {
+      alert('Error: ' + result.error);
+    }
+  });
+
+  // Toggle contraseña...
+  const toggleBtn = document.getElementById('toggle-pass');
+  const passInput = document.getElementById('pass');
+  const eyeSlashLine = document.getElementById('eye-slash-line');
+
+  if (toggleBtn && passInput) {
+    toggleBtn.addEventListener('click', () => {
+      const type = passInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      passInput.setAttribute('type', type);
+      eyeSlashLine.style.display = type === 'password' ? 'none' : 'block';
+    });
+  }
+  // ...
+</script>
+</PublicLayout>
+
+<style>
+
+  .auth-shell{min-height:calc(100vh - 76px);display:flex;align-items:center;justify-content:center;padding:48px 20px;}
+  .auth-tabs{display:flex;gap:6px;background:var(--paper-dim);padding:4px;border-radius:999px;margin-bottom:26px;}
+  .auth-tabs a{flex:1;text-align:center;padding:9px;border-radius:999px;font-size:13.5px;font-weight:600;color:var(--muted);}
+  .auth-tabs a.active{background:#fff;color:var(--navy);box-shadow:0 2px 6px rgba(20,33,61,.08);}
+  .auth-divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--muted);font-size:12.5px;}
+  .auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+
+</style>

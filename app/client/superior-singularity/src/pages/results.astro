@@ -1,0 +1,805 @@
+---
+import PublicLayout from '../layouts/PublicLayout.astro';
+---
+<PublicLayout title="Resultados de búsqueda — EduLibre" description="" navVariant="full">
+<div class="wrap">
+  <div class="results-shell">
+    <aside aria-label="Filtros de búsqueda" class="filters-sidebar">
+      <div class="searchbar-mini">
+        <label for="searchInstitutions" class="filter-heading-label">Búsqueda rápida</label>
+        <input type="text" id="searchInstitutions" placeholder="Carrera o institución..." autocomplete="off" />
+      </div>
+
+      <details class="filter-group" open>
+        <summary><h4>Tipo de certificado</h4></summary>
+        <select id="filterType">
+          <option value="">Todos los tipos</option>
+          <option value="CARRERA">Carrera de grado</option>
+          <option value="TSU">TSU / Técnico</option>
+          <option value="DIPLOMADO">Diplomado</option>
+          <option value="CURSO">Curso corto</option>
+          <option value="TALLER">Taller</option>
+        </select>
+      </details>
+
+      <details class="filter-group" open>
+        <summary><h4>Tipo de institución</h4></summary>
+        <label><input type="checkbox" class="filter-type" value="UNIVERSIDAD"/> Universidad</label>
+        <label><input type="checkbox" class="filter-type" value="TSU"/> TSU / Instituto</label>
+        <label><input type="checkbox" class="filter-type" value="ACADEMIA"/> Academia</label>
+        <label><input type="checkbox" class="filter-type" value="CURSO"/> Centro de cursos</label>
+      </details>
+
+      <details class="filter-group">
+        <summary><h4>Gestión</h4></summary>
+        <label><input type="checkbox" class="filter-gestion" value="PUBLICA"/> Pública</label>
+        <label><input type="checkbox" class="filter-gestion" value="PRIVADA"/> Privada</label>
+      </details>
+
+      <details class="filter-group">
+        <summary><h4>Modalidad</h4></summary>
+        <label><input type="checkbox" class="filter-modality" value="PRESENCIAL"/> Presencial</label>
+        <label><input type="checkbox" class="filter-modality" value="ONLINE"/> Online</label>
+        <label><input type="checkbox" class="filter-modality" value="HIBRIDA"/> Híbrida</label>
+      </details>
+
+      <details class="filter-group">
+        <summary><h4>Costo</h4></summary>
+        <label><input type="checkbox" class="filter-cost" value="true"/> Gratuita</label>
+        <label><input type="checkbox" class="filter-cost" value="false"/> Con costo</label>
+      </details>
+
+      <details class="filter-group">
+        <summary><h4>Ubicación</h4></summary>
+        <select id="filterEstado">
+          <option value="">Cualquier estado</option>
+          <option value="Amazonas">Amazonas</option>
+          <option value="Anzoátegui">Anzoátegui</option>
+          <option value="Apure">Apure</option>
+          <option value="Aragua">Aragua</option>
+          <option value="Barinas">Barinas</option>
+          <option value="Bolívar">Bolívar</option>
+          <option value="Carabobo">Carabobo</option>
+          <option value="Cojedes">Cojedes</option>
+          <option value="Delta Amacuro">Delta Amacuro</option>
+          <option value="Distrito Capital">Distrito Capital</option>
+          <option value="Falcón">Falcón</option>
+          <option value="Guárico">Guárico</option>
+          <option value="La Guaira">La Guaira</option>
+          <option value="Lara">Lara</option>
+          <option value="Mérida">Mérida</option>
+          <option value="Miranda">Miranda</option>
+          <option value="Monagas">Monagas</option>
+          <option value="Nueva Esparta">Nueva Esparta</option>
+          <option value="Portuguesa">Portuguesa</option>
+          <option value="Sucre">Sucre</option>
+          <option value="Táchira">Táchira</option>
+          <option value="Trujillo">Trujillo</option>
+          <option value="Yaracuy">Yaracuy</option>
+          <option value="Zulia">Zulia</option>
+        </select>
+      </details>
+
+      <details class="filter-group">
+        <summary><h4>Duración</h4></summary>
+        <select id="filterDuration">
+          <option value="">Cualquier duración</option>
+          <option value="CORTA">Corta (1 a 6 meses)</option>
+          <option value="MEDIA">Media (1 a 3 años)</option>
+          <option value="LARGA">Larga (4 a 6 años)</option>
+        </select>
+      </details>
+
+      <details class="filter-group">
+        <summary><h4>Acreditación</h4></summary>
+        <label><input type="checkbox" id="filterAcreditada" /> Solo acreditadas</label>
+      </details>
+
+      <div class="filter-actions">
+        <button id="applyFilters" class="btn btn--solid btn--sm" style="width:100%;">Aplicar filtros</button>
+        <button id="resetFilters" class="btn btn--ghost btn--sm" style="width:100%;margin-top:6px;">Limpiar filtros</button>
+      </div>
+    </aside>
+
+    <main class="results-main">
+      <div class="results-header">
+        <h1 id="resultsTitle">Resultados</h1>
+        <span class="results-count" id="resultsCount">Buscando…</span>
+      </div>
+      <div id="resultsList"></div>
+      <div class="pagination" id="pagination"></div>
+    </main>
+  </div>
+</div>
+</PublicLayout>
+
+<style is:global>
+  .results-shell {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 32px !important;
+    padding: 36px 0 80px !important;
+    align-items: flex-start !important;
+    width: 100% !important;
+  }
+
+  .filters-sidebar {
+    width: 280px !important;
+    min-width: 280px !important;
+    max-width: 280px !important;
+    flex-shrink: 0 !important;
+    background: #ffffff !important;
+    border: 1px solid var(--border) !important;
+    border-radius: var(--radius) !important;
+    padding: 22px !important;
+    box-shadow: 0 2px 8px rgba(20, 33, 61, 0.04) !important;
+    position: sticky !important;
+    top: 96px !important;
+    box-sizing: border-box !important;
+  }
+
+  .filter-heading-label {
+    display: block;
+    font-family: 'Archivo', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .searchbar-mini input {
+    width: 100% !important;
+    padding: 10px 12px !important;
+    margin-bottom: 16px !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 8px !important;
+    font-size: 13.5px !important;
+    background: var(--paper) !important;
+    box-sizing: border-box !important;
+  }
+
+  .searchbar-mini input:focus {
+    background: #ffffff !important;
+    border-color: var(--blue-bright) !important;
+  }
+
+  .filter-group {
+    margin-bottom: 14px;
+    border-bottom: 1px solid var(--paper-dim);
+    padding-bottom: 12px;
+  }
+
+  .filter-group:last-of-type {
+    border-bottom: none;
+    margin-bottom: 6px;
+    padding-bottom: 0;
+  }
+
+  .filter-group summary {
+    cursor: pointer;
+    list-style: none;
+    outline: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    color: var(--navy);
+    user-select: none;
+  }
+
+  .filter-group summary h4 {
+    margin: 0;
+    font-size: 13.5px;
+    font-family: 'Archivo', sans-serif;
+  }
+
+  .filter-group summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .filter-group summary::after {
+    content: '+';
+    font-size: 16px;
+    color: var(--muted);
+    font-weight: bold;
+  }
+
+  .filter-group[open] summary::after {
+    content: '−';
+  }
+
+  .filter-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13.5px;
+    color: var(--ink);
+    margin-top: 8px;
+    cursor: pointer;
+  }
+
+  .filter-group label input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+    accent-color: var(--navy);
+    margin: 0;
+  }
+
+  .filter-group select {
+    margin-top: 8px;
+    width: 100% !important;
+    padding: 8px 10px !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 8px !important;
+    font-size: 13.5px !important;
+    font-family: 'Inter', sans-serif !important;
+    background: #ffffff !important;
+    color: var(--ink) !important;
+    box-sizing: border-box !important;
+  }
+
+  .filter-actions {
+    margin-top: 18px;
+  }
+
+  .results-main {
+    flex: 1 !important;
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  .results-header {
+    margin-bottom: 24px;
+  }
+
+  .results-header h1 {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--navy);
+    margin: 0 0 6px 0;
+  }
+
+  .results-count {
+    font-size: 14px;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  #resultsList {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+    width: 100% !important;
+  }
+
+  .result-card {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 20px !important;
+    background: #ffffff !important;
+    border: 1px solid var(--border) !important;
+    border-radius: var(--radius) !important;
+    padding: 20px 24px !important;
+    align-items: flex-start !important;
+    text-decoration: none !important;
+    color: var(--ink) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease !important;
+    box-shadow: 0 2px 6px rgba(20, 33, 61, 0.04) !important;
+  }
+
+  .result-card:hover {
+    transform: translateY(-2px) !important;
+    border-color: var(--blue-bright) !important;
+    box-shadow: 0 8px 24px rgba(20, 33, 61, 0.08) !important;
+  }
+
+  .result-card__media {
+    width: 52px !important;
+    height: 52px !important;
+    min-width: 52px !important;
+    max-width: 52px !important;
+    border-radius: 12px !important;
+    background: var(--paper-dim) !important;
+    border: 1px solid rgba(20, 33, 61, 0.06) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .result-card__icon-svg {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: var(--navy) !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  .result-card__icon-svg svg {
+    width: 26px !important;
+    height: 26px !important;
+    max-width: 26px !important;
+    max-height: 26px !important;
+    display: block !important;
+  }
+
+  .result-card__img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
+  }
+
+  .result-card__body {
+    flex: 1 !important;
+    min-width: 0 !important;
+  }
+
+  .result-card__header {
+    display: flex !important;
+    align-items: flex-start !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    margin-bottom: 6px !important;
+  }
+
+  .result-card__title {
+    font-size: 17px !important;
+    font-weight: 700 !important;
+    color: var(--navy) !important;
+    margin: 0 !important;
+    line-height: 1.35 !important;
+    transition: color 0.15s ease !important;
+  }
+
+  .result-card:hover .result-card__title {
+    color: var(--blue) !important;
+  }
+
+  .result-card__arrow {
+    color: var(--muted) !important;
+    opacity: 0.45 !important;
+    transition: transform 0.18s ease, opacity 0.18s ease, color 0.18s ease !important;
+    flex-shrink: 0 !important;
+    margin-top: 2px !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  .result-card__arrow svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  .result-card:hover .result-card__arrow {
+    opacity: 1 !important;
+    color: var(--blue) !important;
+    transform: translateX(3px) !important;
+  }
+
+  .result-card__meta {
+    font-size: 13.5px !important;
+    color: var(--muted) !important;
+    margin: 0 0 12px 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    flex-wrap: wrap !important;
+  }
+
+  .meta-inst {
+    font-weight: 600 !important;
+    color: var(--ink) !important;
+  }
+
+  .meta-dot {
+    color: var(--border) !important;
+    font-weight: 700 !important;
+  }
+
+  .result-card__tags {
+    display: flex !important;
+    gap: 8px !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+  }
+
+  .result-card .badge {
+    font-size: 11.5px !important;
+    padding: 3px 10px !important;
+    border-radius: 999px !important;
+    font-weight: 600 !important;
+    font-family: 'IBM Plex Mono', monospace !important;
+    display: inline-block !important;
+  }
+
+  .badge--type { background: #E8EEF9 !important; color: var(--blue) !important; }
+  .badge--gestion { background: var(--paper-dim) !important; color: var(--ink) !important; }
+  .badge--modality { background: #F3EBF9 !important; color: #6B348A !important; }
+  .badge--free { background: var(--green-bg) !important; color: var(--green) !important; }
+  .badge--accredited { background: var(--amber-bg) !important; color: var(--amber) !important; }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 32px;
+  }
+
+  .pagination a {
+    min-width: 38px;
+    height: 38px;
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--ink);
+    background: #ffffff;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .pagination a:hover:not(.disabled):not(.active) {
+    border-color: var(--navy);
+    background: var(--paper-dim);
+  }
+
+  .pagination a.active {
+    background: var(--navy);
+    color: #ffffff;
+    border-color: var(--navy);
+  }
+
+  .pagination a.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .empty-state, .error-state {
+    background: #ffffff;
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 56px 24px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 15px;
+  }
+
+  @media (max-width: 860px) {
+    .results-shell {
+      flex-direction: column !important;
+    }
+    .filters-sidebar {
+      width: 100% !important;
+      max-width: 100% !important;
+      position: static !important;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .result-card {
+      flex-direction: column !important;
+      gap: 14px !important;
+      padding: 16px !important;
+    }
+    .result-card__media {
+      width: 44px !important;
+      height: 44px !important;
+      min-width: 44px !important;
+      max-width: 44px !important;
+    }
+  }
+</style>
+
+<script type="module">
+  const listEl = document.getElementById('resultsList');
+  const titleEl = document.getElementById('resultsTitle');
+  const countEl = document.getElementById('resultsCount');
+  const paginationEl = document.getElementById('pagination');
+  const applyBtn = document.getElementById('applyFilters');
+  const resetBtn = document.getElementById('resetFilters');
+  const searchInput = document.getElementById('searchInstitutions');
+  const filterTypeEl = document.getElementById('filterType');
+  const acreditadaEl = document.getElementById('filterAcreditada');
+  const estadoEl = document.getElementById('filterEstado');
+  const durationEl = document.getElementById('filterDuration');
+  const typeCheckboxes = Array.from(document.querySelectorAll('.filter-type'));
+  const gestionCheckboxes = Array.from(document.querySelectorAll('.filter-gestion'));
+  const modalityCheckboxes = Array.from(document.querySelectorAll('.filter-modality'));
+  const costCheckboxes = Array.from(document.querySelectorAll('.filter-cost'));
+
+  const LIMIT = 6;
+  const params = new URLSearchParams(window.location.search);
+  let state = {
+    q: params.get('q') || params.get('query') || params.get('search') || '',
+    estado: params.get('estado') || '',
+    type: params.get('type') || '',
+    programType: params.get('programType') || '',
+    gestion: params.get('gestion') || '',
+    modality: params.get('modality') || '',
+    isFree: params.has('isFree') ? params.get('isFree') === 'true' : null,
+    duration: params.get('duration') || '',
+    acreditada: params.get('acreditada') === 'true',
+    page: parseInt(params.get('page') || '1', 10) || 1,
+  };
+
+  function syncFiltersFromState() {
+    searchInput.value = state.q;
+    if (filterTypeEl) filterTypeEl.value = state.programType;
+    typeCheckboxes.forEach((cb) => { cb.checked = cb.value === state.type; });
+    gestionCheckboxes.forEach((cb) => { cb.checked = cb.value === state.gestion; });
+    modalityCheckboxes.forEach((cb) => { cb.checked = cb.value === state.modality; });
+    costCheckboxes.forEach((cb) => { cb.checked = state.isFree !== null && cb.value === String(state.isFree); });
+    if (durationEl) durationEl.value = state.duration;
+    if (acreditadaEl) acreditadaEl.checked = state.acreditada;
+    if (estadoEl) estadoEl.value = state.estado;
+  }
+
+  function makeSingleSelect(group) {
+    group.forEach((cb) => {
+      cb.addEventListener('change', () => {
+        if (cb.checked) group.forEach((other) => { if (other !== cb) other.checked = false; });
+        readFiltersFromUI();
+        fetchResults();
+      });
+    });
+  }
+  makeSingleSelect(typeCheckboxes);
+  makeSingleSelect(gestionCheckboxes);
+  makeSingleSelect(modalityCheckboxes);
+  makeSingleSelect(costCheckboxes);
+
+  function readFiltersFromUI() {
+    state.q = searchInput.value.trim();
+    state.programType = filterTypeEl ? filterTypeEl.value : '';
+    const checkedType = typeCheckboxes.find((cb) => cb.checked);
+    const checkedGestion = gestionCheckboxes.find((cb) => cb.checked);
+    const checkedModality = modalityCheckboxes.find((cb) => cb.checked);
+    const checkedCost = costCheckboxes.find((cb) => cb.checked);
+    state.type = checkedType ? checkedType.value : '';
+    state.gestion = checkedGestion ? checkedGestion.value : '';
+    state.modality = checkedModality ? checkedModality.value : '';
+    state.isFree = checkedCost ? checkedCost.value === 'true' : null;
+    state.duration = durationEl ? durationEl.value : '';
+    state.acreditada = acreditadaEl ? acreditadaEl.checked : false;
+    state.estado = estadoEl ? estadoEl.value : '';
+    state.page = 1;
+  }
+
+  function updateUrl() {
+    const p = new URLSearchParams();
+    if (state.q) p.set('q', state.q);
+    if (state.estado) p.set('estado', state.estado);
+    if (state.type) p.set('type', state.type);
+    if (state.programType) p.set('programType', state.programType);
+    if (state.gestion) p.set('gestion', state.gestion);
+    if (state.modality) p.set('modality', state.modality);
+    if (state.isFree !== null) p.set('isFree', String(state.isFree));
+    if (state.duration) p.set('duration', state.duration);
+    if (state.acreditada) p.set('acreditada', 'true');
+    if (state.page > 1) p.set('page', String(state.page));
+    const qs = p.toString();
+    window.history.replaceState({}, '', qs ? `/results?${qs}` : '/results');
+  }
+
+  function buildApiParams() {
+    const p = new URLSearchParams();
+    if (state.q) p.set('q', state.q);
+    if (state.estado) p.set('estado', state.estado);
+    if (state.type) p.set('type', state.type);
+    if (state.programType) p.set('programType', state.programType);
+    if (state.gestion) p.set('gestion', state.gestion);
+    if (state.modality) p.set('modality', state.modality);
+    if (state.isFree !== null) p.set('isFree', String(state.isFree));
+    if (state.duration) p.set('duration', state.duration);
+    if (state.acreditada) p.set('acreditada', 'true');
+    p.set('page', String(state.page));
+    p.set('limit', String(LIMIT));
+    return p;
+  }
+
+  function typeIcon() {
+    return `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+      <path d="M6 12v5c0 2 3 3 6 3s6-1 6-3v-5"/>
+    </svg>`;
+  }
+
+  function renderTitle() {
+    titleEl.innerHTML = state.q
+      ? `Resultados para <span style="color:var(--stamp);">"${escapeHtml(state.q)}"</span>`
+      : 'Todas las instituciones y carreras';
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function flattenResults(institutions) {
+    const cards = [];
+    for (const inst of institutions) {
+      const programs = Array.isArray(inst.programs) ? inst.programs : [];
+      if (programs.length === 0) {
+        cards.push({ inst, program: null });
+      } else {
+        for (const program of programs) cards.push({ inst, program });
+      }
+    }
+    return cards;
+  }
+
+  function renderCards(institutions) {
+    const cards = flattenResults(institutions);
+    if (cards.length === 0) {
+      listEl.innerHTML = '<div class="empty-state">No encontramos resultados con estos filtros. Prueba ajustando la búsqueda.</div>';
+      return;
+    }
+    listEl.innerHTML = cards.map(({ inst, program }) => {
+      const title = program ? program.name : inst.name;
+      const location = [inst.ciudad, inst.estado].filter(Boolean).join(' — ');
+      
+      const metaParts = [];
+      if (program && inst.name) metaParts.push(`<span class="meta-inst">${escapeHtml(inst.name.trim())}</span>`);
+      if (location) metaParts.push(`<span class="meta-loc">${escapeHtml(location)}</span>`);
+      if (program?.duration) {
+        const durText = isNaN(Number(program.duration)) ? program.duration : `${program.duration} semestres`;
+        metaParts.push(`<span class="meta-duration">${escapeHtml(durText)}</span>`);
+      }
+
+      const tags = [];
+      if (program?.type) {
+        tags.push(`<span class="badge badge--type">${escapeHtml(program.type)}</span>`);
+      } else if (inst.type) {
+        tags.push(`<span class="badge badge--type">${escapeHtml(inst.type)}</span>`);
+      }
+      
+      if (inst.gestion) {
+        tags.push(`<span class="badge badge--gestion">${inst.gestion === 'PUBLICA' ? 'Pública' : 'Privada'}</span>`);
+      }
+      if (program?.modality) {
+        tags.push(`<span class="badge badge--modality">${escapeHtml(program.modality)}</span>`);
+      }
+      if (program?.is_free) {
+        tags.push('<span class="badge badge--free">Gratuita</span>');
+      }
+      if (inst.is_accredited) {
+        tags.push('<span class="badge badge--accredited">Acreditada</span>');
+      }
+
+      const href = `/curso?id=${program ? program.id : ''}&institutionId=${inst.id}`;
+      
+      const mediaContent = inst.photo
+        ? `<img src="${escapeHtml(inst.photo)}" alt="${escapeHtml(inst.name)}" class="result-card__img" />`
+        : `<div class="result-card__icon-svg">${typeIcon()}</div>`;
+
+      return `
+        <a class="result-card" href="${href}">
+          <div class="result-card__media">
+            ${mediaContent}
+          </div>
+          <div class="result-card__body">
+            <div class="result-card__header">
+              <h3 class="result-card__title">${escapeHtml(title.trim())}</h3>
+              <span class="result-card__arrow">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </span>
+            </div>
+            <div class="result-card__meta">${metaParts.join('<span class="meta-dot">·</span>')}</div>
+            <div class="result-card__tags">${tags.join('')}</div>
+          </div>
+        </a>`;
+    }).join('');
+  }
+
+  function renderPagination(total, totalPages, page) {
+    if (totalPages <= 1) { paginationEl.innerHTML = ''; return; }
+    let html = '';
+    html += `<a data-page="${page - 1}" class="${page <= 1 ? 'disabled' : ''}">←</a>`;
+    for (let i = 1; i <= totalPages; i++) {
+      html += `<a data-page="${i}" class="${i === page ? 'active' : ''}">${i}</a>`;
+    }
+    html += `<a data-page="${page + 1}" class="${page >= totalPages ? 'disabled' : ''}">→</a>`;
+    paginationEl.innerHTML = html;
+    paginationEl.querySelectorAll('a[data-page]').forEach((a) => {
+      a.addEventListener('click', () => {
+        const p = parseInt(a.dataset.page, 10);
+        if (!p || p < 1 || p > totalPages) return;
+        state.page = p;
+        fetchResults();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    });
+  }
+
+  async function fetchResults() {
+    renderTitle();
+    countEl.textContent = 'Buscando…';
+    listEl.innerHTML = '';
+    paginationEl.innerHTML = '';
+    updateUrl();
+
+    try {
+      const response = await fetch(`/api/institutions?${buildApiParams().toString()}`);
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Error al buscar');
+
+      const { data, total, totalPages, page } = result;
+      const shownCount = flattenResults(data).length;
+      countEl.textContent = total === 0
+        ? 'Sin resultados'
+        : `Mostrando ${shownCount} opción${shownCount === 1 ? '' : 'es'} de ${total} institución${total === 1 ? '' : 'es'} (página ${page} de ${totalPages})`;
+      renderCards(data);
+      renderPagination(total, totalPages, page);
+    } catch (err) {
+      listEl.innerHTML = `<div class="error-state">No pudimos cargar los resultados. Intenta de nuevo en unos segundos.</div>`;
+      countEl.textContent = '';
+      console.error('Error buscando instituciones', err);
+    }
+  }
+
+  let debounceTimer = null;
+  searchInput.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      readFiltersFromUI();
+      fetchResults();
+    }, 250);
+  });
+
+  searchInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      clearTimeout(debounceTimer);
+      readFiltersFromUI();
+      fetchResults();
+    }
+  });
+
+  if (filterTypeEl) filterTypeEl.addEventListener('change', () => { readFiltersFromUI(); fetchResults(); });
+  if (estadoEl) estadoEl.addEventListener('change', () => { readFiltersFromUI(); fetchResults(); });
+  if (durationEl) durationEl.addEventListener('change', () => { readFiltersFromUI(); fetchResults(); });
+  if (acreditadaEl) acreditadaEl.addEventListener('change', () => { readFiltersFromUI(); fetchResults(); });
+
+  applyBtn.addEventListener('click', () => {
+    readFiltersFromUI();
+    fetchResults();
+  });
+
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      state = {
+        q: '',
+        estado: '',
+        type: '',
+        programType: '',
+        gestion: '',
+        modality: '',
+        isFree: null,
+        duration: '',
+        acreditada: false,
+        page: 1
+      };
+      syncFiltersFromState();
+      fetchResults();
+    });
+  }
+
+  syncFiltersFromState();
+  fetchResults();
+</script>

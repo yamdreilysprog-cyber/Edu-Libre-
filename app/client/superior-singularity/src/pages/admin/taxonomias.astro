@@ -1,0 +1,47 @@
+---
+import AppShellLayout from '../../layouts/AppShellLayout.astro';
+---
+<AppShellLayout
+  title="Taxonomías — EduLibre"
+  pageTitle="Taxonomías"
+  role="admin"
+  active="taxonomias"
+  userInitials="AD"
+  userLabel="Admin"
+>
+<p style="color:var(--muted);font-size:14px;margin-bottom:20px;max-width:560px;">Categorías, estados/ciudades y tipos de institución que se usan en los filtros de búsqueda de todo el sitio.</p>
+<div class="grid-2">
+<div class="card">
+<div class="page-header-row" style="margin-bottom:14px;">
+<h3 style="font-size:15px;">Áreas académicas</h3>
+<button class="btn btn--ghost btn--sm">+ Añadir</button>
+</div>
+<div class="table-wrap">
+<table>
+<tbody>
+<tr><td>Ingeniería y Tecnología</td><td style="text-align:right;"><button class="btn btn--ghost btn--sm">Editar</button></td></tr>
+<tr><td>Ciencias de la Salud</td><td style="text-align:right;"><button class="btn btn--ghost btn--sm">Editar</button></td></tr>
+<tr><td>Económicas y Sociales</td><td style="text-align:right;"><button class="btn btn--ghost btn--sm">Editar</button></td></tr>
+<tr><td>Humanidades y Educación</td><td style="text-align:right;"><button class="btn btn--ghost btn--sm">Editar</button></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="card">
+<div class="page-header-row" style="margin-bottom:14px;">
+<h3 style="font-size:15px;">Estados</h3>
+<button class="btn btn--ghost btn--sm">+ Añadir</button>
+</div>
+<div class="table-wrap">
+<table>
+<tbody>
+<tr><td>Distrito Capital</td><td style="text-align:right;"><button class="btn btn--ghost btn--sm">Editar</button></td></tr>
+<tr><td>Zulia</td><td style="text-align:right;"><button class="btn btn--ghost btn--sm">Editar</button></td></tr>
+<tr><td>Miranda</td><td style="text-align:right;"><button class="btn btn--ghost btn--sm">Editar</button></td></tr>
+<tr><td>Carabobo</td><td style="text-align:right;"><button class="btn btn--ghost btn--sm">Editar</button></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</AppShellLayout>

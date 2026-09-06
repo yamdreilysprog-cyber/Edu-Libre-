@@ -1,0 +1,98 @@
+---
+// Variantes de botones de acción a la derecha del nav:
+// 'full'       -> Iniciar sesión + Registrarme            (default)
+// 'login'      -> solo "Crear cuenta"                      (usado en /login)
+// 'ghost-only' -> solo "Iniciar sesión"                     (registro, legal)
+// 'institucion'-> Iniciar sesión + "Registrar institución"  (B2B)
+export interface Props {
+  variant?: 'full' | 'login' | 'ghost-only' | 'institucion';
+}
+const { variant = 'full' } = Astro.props;
+---
+<header class="nav">
+  <div class="wrap">
+    <div class="nav__logo"><a href="/">Edu<span>Libre</span></a></div>
+    <ul class="nav__links">
+      <li><a href="/results">Explorar</a></li>
+      <li><a href="/instituciones">Para instituciones</a></li>
+      <li><a href="/como-funciona">Cómo funciona</a></li>
+    </ul>
+    <div class="nav__actions" id="nav-actions">
+      {variant === 'full' && (
+        <>
+          <a href="/login" class="btn btn--ghost">Iniciar sesión</a>
+          <a href="/registro" class="btn btn--solid">Registrarme</a>
+        </>
+      )}
+      {variant === 'login' && (
+        <a href="/registro" class="btn btn--solid">Crear cuenta</a>
+      )}
+      {variant === 'ghost-only' && (
+        <a href="/login" class="btn btn--ghost">Iniciar sesión</a>
+      )}
+      {variant === 'institucion' && (
+        <>
+          <a href="/login" class="btn btn--ghost">Iniciar sesión</a>
+          <a href="/registro-institucion" class="btn btn--stamp">Registrar institución</a>
+        </>
+      )}
+    </div>
+    <button class="nav__burger" aria-label="Abrir menú"><span></span><span></span><span></span></button>
+  </div>
+</header>
+<script type="module">
+  function updateNavActions() {
+    console.debug('[Nav] updateNavActions start', { readyState: document.readyState });
+    const token = localStorage.getItem('auth_token');
+    const role = localStorage.getItem('role');
+    const navActions = document.getElementById('nav-actions');
+    if (!navActions) {
+      console.debug('[Nav] #nav-actions not found');
+      return;
+    }
+
+    if (token && role) {
+      console.debug('[Nav] authenticated user detected', { role });
+      let accountUrl = '/';
+      if (role === 'STUDENT') accountUrl = '/estudiante/panel';
+      if (role === 'INSTITUTION') accountUrl = '/institucion/dashboard';
+      if (role === 'ADMIN') accountUrl = '/admin/dashboard';
+
+      navActions.innerHTML = `
+        <a href="${accountUrl}" class="btn btn--solid">Mi cuenta</a>
+        <button id="logout-btn" class="btn btn--ghost">Cerrar sesión</button>
+      `;
+
+      document.getElementById('logout-btn')?.addEventListener('click', () => {
+        console.debug('[Nav] logout clicked');
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('role');
+        try { localStorage.removeItem('user_session'); } catch(e){}
+        console.debug('[Nav] cleared local storage, redirecting to /');
+        window.location.href = '/';
+      });
+    } else {
+      console.debug('[Nav] no authenticated user');
+      // ensure default guest buttons are present if not authenticated
+      const defaultHtml = `
+        <a href="/login" class="btn btn--ghost">Iniciar sesión</a>
+        <a href="/registro" class="btn btn--solid">Registrarme</a>
+      `;
+      // Only replace if different to avoid clobbering variants like 'institucion' or 'login'
+      if (navActions.innerHTML.trim().startsWith('<a') || navActions.innerHTML.trim().includes('Iniciar sesión')) {
+        navActions.innerHTML = defaultHtml;
+      }
+    }
+  }
+
+  // Run on initial load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => { console.debug('[Nav] DOMContentLoaded'); updateNavActions(); });
+  } else {
+    console.debug('[Nav] document already loaded');
+    updateNavActions();
+  }
+
+  // Also handle page navigation (back/forward) where scripts may not rerun
+  window.addEventListener('pageshow', (ev) => { console.debug('[Nav] pageshow', { persisted: ev.persisted }); updateNavActions(); });
+</script>

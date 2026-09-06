@@ -1,0 +1,418 @@
+---
+export const prerender = false;
+import PublicLayout from '../layouts/PublicLayout.astro';
+
+const programId = Astro.url.searchParams.get('id') || Astro.url.searchParams.get('programId');
+const institutionId = Astro.url.searchParams.get('institutionId');
+
+let program = null;
+let institution = null;
+let errorMessage = '';
+
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL || process.env.PUBLIC_SUPABASE_URL || 'https://xukvbbdwtjrmjshomfws.supabase.co';
+const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY || process.env.PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh1a3ZiYmR3dGpybWpzaG9tZndzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5ODc5NjQsImV4cCI6MjA4NjU2Mzk2NH0.a6hT5Xw_f18e9V6wZqY0Mv-1m5M2m5Y0_q9l9a1b1c1';
+
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+try {
+  if (programId) {
+    const { data, error } = await supabase
+      .from('programs')
+      .select('*, institutions(*)')
+      .eq('id', parseInt(programId, 10))
+      .maybeSingle();
+
+    if (data) {
+      program = data;
+      institution = data.institutions;
+    } else {
+      errorMessage = 'No se encontró el programa o curso solicitado.';
+    }
+  } else if (institutionId) {
+    const { data, error } = await supabase
+      .from('institutions')
+      .select('*, programs(*)')
+      .eq('id', parseInt(institutionId, 10))
+      .maybeSingle();
+
+    if (data) {
+      institution = data;
+      if (data.programs && data.programs.length > 0) {
+        program = data.programs[0];
+      }
+    } else {
+      errorMessage = 'No se encontró la institución solicitada.';
+    }
+  }
+} catch (e) {
+  errorMessage = 'Error al obtener los detalles de la oferta académica.';
+}
+
+const pageTitle = program
+  ? `${program.name} — ${institution?.name || 'EduLibre'}`
+  : (institution ? `${institution.name} — EduLibre` : 'Detalle de Oferta — EduLibre');
+
+const locationText = [institution?.ciudad, institution?.estado, 'Venezuela'].filter(Boolean).join(', ');
+---
+
+<PublicLayout title={pageTitle} description="" navVariant="full">
+<div class="wrap">
+  {(!program && !institution) ? (
+    <div class="not-found-card">
+      <h2>Oferta académica no encontrada</h2>
+      <p>{errorMessage || 'El programa o curso que buscas no está disponible actualmente o fue retirado.'}</p>
+      <a href="/results" class="btn btn--solid">Explorar todas las carreras</a>
+    </div>
+  ) : (
+    <>
+      <div class="breadcrumb" style="padding-top:24px;">
+        <a href="/">Inicio</a> / <a href="/results">Explorar</a> {program?.area && (<> / <a href={`/results?query=${encodeURIComponent(program.area)}`}>{program.area}</a></>)} / <span class="breadcrumb-current">{program?.name || institution?.name}</span>
+      </div>
+
+      <div class="curso-shell">
+        <div class="curso-main">
+          <div class="curso-header">
+            <span class="eyebrow mono">{program?.type || institution?.type}</span>
+            <h1 class="curso-title">{program?.name || institution?.name}</h1>
+            <div class="subline">
+              <span class="subline-inst">{institution?.name}</span>
+              {locationText && <span class="subline-loc">· {locationText}</span>}
+            </div>
+            
+            <div class="curso-badges">
+              {program?.type && <span class="badge badge--type">{program.type}</span>}
+              {institution?.gestion && <span class="badge badge--gestion">{institution.gestion === 'PUBLICA' ? 'Pública' : 'Privada'}</span>}
+              {program?.modality && <span class="badge badge--modality">{program.modality}</span>}
+              <span class={`badge ${program?.is_free ? 'badge--free' : 'badge--cost'}`}>
+                {program?.is_free ? 'Gratuita' : 'Con matrícula'}
+              </span>
+              {institution?.is_accredited && <span class="badge badge--accredited">Acreditada</span>}
+            </div>
+          </div>
+
+          <section class="curso-section">
+            <h2>Descripción general</h2>
+            <p class="curso-desc">
+              {program?.description || institution?.description || 'Formación integral orientada al desarrollo de competencias técnicas, científicas y prácticas con estándares de calidad y alta empleabilidad en el sector laboral.'}
+            </p>
+          </section>
+
+          <section class="curso-section">
+            <h2>Estructura del plan de estudio</h2>
+            <p class="curso-desc">
+              {program?.study_plan || 'Plan de estudio no disponible.'}
+            </p>
+          </section>
+        </div>
+
+        <aside class="sidebar-col">
+          <div class="sidebar-card">
+            <h3 class="sidebar-card__title">Ficha del programa</h3>
+            <div class="fact-row"><span>Duración</span><span>{program?.duration || 'Por definir'}</span></div>
+            <div class="fact-row"><span>Modalidad</span><span>{program?.modality || 'Presencial'}</span></div>
+            <div class="fact-row"><span>Régimen</span><span>{institution?.gestion === 'PUBLICA' ? 'Pública' : (institution?.gestion === 'PRIVADA' ? 'Privada' : 'Mixta')}</span></div>
+            <div class="fact-row"><span>Costo</span><span>{program?.is_free ? 'Sin costo / Gratuita' : 'Arancel / Matrícula'}</span></div>
+            <div class="fact-row"><span>Tipo</span><span>{program?.type || institution?.type}</span></div>
+            {institution?.phone && <div class="fact-row"><span>Contacto</span><span>{institution.phone}</span></div>}
+
+            <div class="action-buttons">
+              <button class="btn btn--solid" id="saveFavoriteBtn" data-inst-id={institution?.id}>
+                Guardar en favoritos
+              </button>
+              {institution?.website && (
+                <a class="btn btn--ghost" href={institution.website} target="_blank" rel="noopener noreferrer">
+                  Sitio web oficial ↗
+                </a>
+              )}
+              <a class="btn btn--outline btn--sm" href="/results" style="margin-top:4px;">
+                ← Volver a resultados
+              </a>
+            </div>
+            <div id="favFeedback" class="fav-feedback"></div>
+          </div>
+        </aside>
+      </div>
+    </>
+  )}
+</div>
+</PublicLayout>
+
+<style is:global>
+  .curso-shell {
+    display: flex;
+    flex-direction: row;
+    gap: 40px;
+    padding: 32px 0 80px;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .curso-main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .curso-header {
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .curso-title {
+    font-size: clamp(26px, 3.2vw, 36px);
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin: 8px 0 10px 0;
+  }
+
+  .subline {
+    font-size: 15.5px;
+    color: var(--muted);
+    margin-bottom: 18px;
+  }
+
+  .subline-inst {
+    font-weight: 700;
+    color: var(--blue);
+  }
+
+  .curso-badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .badge {
+    font-size: 11.5px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .badge--type { background: #E8EEF9; color: var(--blue); }
+  .badge--gestion { background: var(--paper-dim); color: var(--ink); }
+  .badge--modality { background: #F3EBF9; color: #6B348A; }
+  .badge--free { background: var(--green-bg); color: var(--green); }
+  .badge--cost { background: #F5EAE1; color: #8A4F1D; }
+  .badge--accredited { background: var(--amber-bg); color: var(--amber); }
+
+  .curso-section {
+    margin-bottom: 36px;
+  }
+
+  .curso-section h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .curso-desc {
+    color: var(--ink);
+    font-size: 15.5px;
+    line-height: 1.7;
+    max-width: 680px;
+  }
+
+  .plan-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 680px;
+  }
+
+  .plan-item {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 16px 20px;
+    box-shadow: 0 1px 3px rgba(20,33,61,0.03);
+  }
+
+  .plan-item h4 {
+    font-size: 14.5px;
+    font-weight: 700;
+    color: var(--navy);
+    margin: 0 0 6px 0;
+  }
+
+  .plan-item p {
+    font-size: 13.5px;
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.55;
+  }
+
+  .req-list {
+    color: var(--muted);
+    font-size: 14.5px;
+    line-height: 1.8;
+    padding-left: 20px;
+    max-width: 680px;
+    margin: 0;
+  }
+
+  .sidebar-col {
+    width: 320px;
+    min-width: 320px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 96px;
+  }
+
+  .sidebar-card {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: 0 4px 16px rgba(20,33,61,0.06);
+  }
+
+  .sidebar-card__title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin: 0 0 16px 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--paper-dim);
+  }
+
+  .fact-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13.5px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .fact-row:last-of-type {
+    border-bottom: none;
+    margin-bottom: 14px;
+  }
+
+  .fact-row span:first-child {
+    color: var(--muted);
+  }
+
+  .fact-row span:last-child {
+    font-weight: 600;
+    color: var(--navy);
+    text-align: right;
+  }
+
+  .action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 18px;
+  }
+
+  .action-buttons .btn {
+    width: 100%;
+  }
+
+  .fav-feedback {
+    margin-top: 10px;
+    font-size: 13px;
+    text-align: center;
+    min-height: 20px;
+  }
+
+  .breadcrumb-current {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .not-found-card {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 60px 24px;
+    text-align: center;
+    margin: 48px auto;
+    max-width: 540px;
+  }
+
+  .not-found-card h2 {
+    font-size: 22px;
+    color: var(--navy);
+    margin-bottom: 10px;
+  }
+
+  .not-found-card p {
+    color: var(--muted);
+    font-size: 15px;
+    margin-bottom: 24px;
+  }
+
+  @media (max-width: 880px) {
+    .curso-shell {
+      flex-direction: column;
+      gap: 32px;
+    }
+    .sidebar-col {
+      width: 100%;
+      min-width: 100%;
+      position: static;
+    }
+  }
+</style>
+
+<script type="module">
+  const favBtn = document.getElementById('saveFavoriteBtn');
+  const feedbackEl = document.getElementById('favFeedback');
+
+  if (favBtn) {
+    favBtn.addEventListener('click', async () => {
+      const instId = favBtn.dataset.instId;
+      const token = localStorage.getItem('auth_token');
+      
+      if (!token) {
+        feedbackEl.style.color = 'var(--stamp)';
+        feedbackEl.textContent = 'Inicia sesión para guardar en favoritos.';
+        setTimeout(() => { window.location.href = '/login'; }, 1500);
+        return;
+      }
+
+      try {
+        favBtn.disabled = true;
+        favBtn.textContent = 'Guardando…';
+        const response = await fetch('/api/favorites', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ institutionId: parseInt(instId, 10) })
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+          feedbackEl.style.color = 'var(--green)';
+          feedbackEl.textContent = '✓ Guardado en tus favoritos';
+          favBtn.textContent = 'Guardado';
+        } else if (response.status === 409) {
+          feedbackEl.style.color = 'var(--blue)';
+          feedbackEl.textContent = 'Esta institución ya está en tus favoritos.';
+          favBtn.textContent = 'Guardado';
+        } else {
+          feedbackEl.style.color = 'var(--stamp)';
+          feedbackEl.textContent = result.error || 'Error al guardar.';
+          favBtn.textContent = 'Guardar en favoritos';
+          favBtn.disabled = false;
+        }
+      } catch (err) {
+        feedbackEl.style.color = 'var(--stamp)';
+        feedbackEl.textContent = 'Error de conexión.';
+        favBtn.textContent = 'Guardar en favoritos';
+        favBtn.disabled = false;
+      }
+    });
+  }
+</script>

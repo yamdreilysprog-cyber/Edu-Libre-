@@ -1,0 +1,14 @@
+/node_modules/
+.env
+.env.local
+.env.development
+.env.production
+.env.staging
+/generated
+.astro/
+dist/
+/app/client/superior-singularity/dist/
+.vercel/
+/app/client/superior-singularity/node_modules/
+database/
+

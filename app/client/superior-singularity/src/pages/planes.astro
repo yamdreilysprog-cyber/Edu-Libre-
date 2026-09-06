@@ -1,0 +1,223 @@
+---
+import PublicLayout from '../layouts/PublicLayout.astro';
+---
+<PublicLayout title="Planes y Precios — EduLibre" description="Conoce los planes de publicación y posicionamiento para universidades e institutos en EduLibre." navVariant="institucion">
+<div class="pricing-hero">
+  <div class="wrap">
+    <span class="mono eyebrow">Planes institucionales</span>
+    <h1>Elige el plan ideal para dar a conocer tu oferta académica</h1>
+    <p>Impulsa la visibilidad de tus carreras universitarias, diplomados y cursos técnicos ante la mayor comunidad de aspirantes en Venezuela.</p>
+  </div>
+</div>
+
+<div class="wrap" style="padding:60px 20px 90px;">
+  <div class="pricing-grid">
+    <div class="pricing-card">
+      <div class="pricing-card__head">
+        <span class="plan-tag">Fase 1 · Acceso inicial</span>
+        <h3>Plan Gratuito</h3>
+        <div class="price">
+          <span class="val">$0</span>
+          <span class="period">/ para siempre</span>
+        </div>
+        <p class="plan-sub">Ideal para comenzar a publicar la oferta académica de tu institución sin costo.</p>
+      </div>
+
+      <ul class="plan-features">
+        <li>✓ Publicación de hasta 5 carreras o cursos</li>
+        <li>✓ Presencia en el directorio nacional</li>
+        <li>✓ Enlace directo a tu sitio web y contacto</li>
+        <li>✓ Panel de gestión básico</li>
+        <li class="disabled">✕ Posicionamiento destacado en búsquedas</li>
+        <li class="disabled">✕ Insignia institucional verificada oficial</li>
+      </ul>
+
+      <a href="/registro-institucion" class="btn btn--ghost" style="width:100%;">Comenzar gratis</a>
+    </div>
+
+    <div class="pricing-card pricing-card--featured">
+      <div class="featured-badge">Más popular</div>
+      <div class="pricing-card__head">
+        <span class="plan-tag" style="color:#F0DDBB;">Crecimiento</span>
+        <h3>Plan Destacado Pro</h3>
+        <div class="price">
+          <span class="val">$25</span>
+          <span class="period">/ mes</span>
+        </div>
+        <p class="plan-sub">Para instituciones que desean maximizar la captación de nuevos estudiantes.</p>
+      </div>
+
+      <ul class="plan-features">
+        <li>✓ Carreras y cursos ilimitados</li>
+        <li>✓ Posicionamiento prioritario en resultados</li>
+        <li>✓ Insignia institucional verificada oficial</li>
+        <li>✓ Estadísticas completas de visitas y clics</li>
+        <li>✓ Soporte técnico prioritario por WhatsApp</li>
+      </ul>
+
+      <a href="/registro-institucion" class="btn btn--stamp" style="width:100%;">Elegir Plan Pro</a>
+    </div>
+
+    <div class="pricing-card">
+      <div class="pricing-card__head">
+        <span class="plan-tag">Universidades</span>
+        <h3>Plan Campus Enterprise</h3>
+        <div class="price">
+          <span class="val">$60</span>
+          <span class="period">/ mes</span>
+        </div>
+        <p class="plan-sub">Solución integral para universidades con múltiples facultades y sedes.</p>
+      </div>
+
+      <ul class="plan-features">
+        <li>✓ Todo lo incluido en el Plan Pro</li>
+        <li>✓ Múltiples sedes y campus regionales</li>
+        <li>✓ Banner destacado en la página de inicio</li>
+        <li>✓ Mini-sitio institucional con galería extendida</li>
+        <li>✓ Gestor de cuenta dedicado</li>
+      </ul>
+
+      <a href="/contacto" class="btn btn--ghost" style="width:100%;">Contactar asesor</a>
+    </div>
+  </div>
+</div>
+</PublicLayout>
+
+<style>
+  .pricing-hero {
+    background: var(--navy);
+    color: #ffffff;
+    padding: 72px 0 60px;
+    text-align: center;
+  }
+  .pricing-hero .eyebrow {
+    color: #F0DDBB;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: inline-block;
+  }
+  .pricing-hero h1 {
+    font-size: clamp(28px, 3.8vw, 42px);
+    color: #ffffff;
+    max-width: 720px;
+    margin: 0 auto 16px;
+    font-weight: 900;
+  }
+  .pricing-hero p {
+    color: #C4D0E8;
+    max-width: 600px;
+    margin: 0 auto;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+    align-items: stretch;
+  }
+  .pricing-card {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 36px 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 4px 16px rgba(20, 33, 61, 0.04);
+    position: relative;
+  }
+  .pricing-card--featured {
+    border-color: var(--stamp);
+    background: var(--navy);
+    color: #ffffff;
+    transform: scale(1.03);
+    box-shadow: 0 12px 36px rgba(20, 33, 61, 0.15);
+  }
+  .featured-badge {
+    position: absolute;
+    top: -13px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--stamp);
+    color: #ffffff;
+    font-size: 11.5px;
+    font-weight: 700;
+    font-family: 'IBM Plex Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 4px 14px;
+    border-radius: 999px;
+  }
+  .plan-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--blue);
+    font-weight: 600;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 8px;
+  }
+  .pricing-card h3 {
+    font-size: 22px;
+    margin: 0 0 12px 0;
+    font-weight: 800;
+  }
+  .price {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .price .val {
+    font-size: 38px;
+    font-weight: 900;
+    font-family: 'Archivo', sans-serif;
+  }
+  .price .period {
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .pricing-card--featured .price .period {
+    color: #C4D0E8;
+  }
+  .plan-sub {
+    font-size: 13.5px;
+    color: var(--muted);
+    line-height: 1.55;
+    margin: 0 0 24px 0;
+    min-height: 42px;
+  }
+  .pricing-card--featured .plan-sub {
+    color: #C4D0E8;
+  }
+  .plan-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 32px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    font-size: 14px;
+  }
+  .plan-features li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    line-height: 1.45;
+  }
+  .plan-features li.disabled {
+    color: var(--muted);
+    opacity: 0.6;
+  }
+  @media (max-width: 960px) {
+    .pricing-grid {
+      grid-template-columns: 1fr;
+    }
+    .pricing-card--featured {
+      transform: none;
+    }
+  }
+</style>

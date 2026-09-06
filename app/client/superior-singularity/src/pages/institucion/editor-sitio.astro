@@ -1,0 +1,282 @@
+---
+import AppShellLayout from '../../layouts/AppShellLayout.astro';
+---
+<AppShellLayout
+  title="Configuración de perfil — EduLibre"
+  pageTitle="Configuración de perfil institucional"
+  role="institucion"
+  active="editor-sitio"
+  userInitials="USB"
+  userLabel="Admin USB"
+>
+  <Fragment slot="topbar-extra">
+    <a id="previewBtn" class="btn btn--ghost btn--sm" href="/institucion-perfil" target="_blank">Vista previa ↗</a>
+  </Fragment>
+
+<div class="editor-shell">
+  <div class="card">
+    <h3 style="font-size:16px;font-weight:700;margin-bottom:16px;color:var(--navy);">Información general</h3>
+    
+    <div class="field">
+      <label for="instName">Nombre público de la institución</label>
+      <input type="text" id="instName" placeholder="Ej. Universidad Simón Bolívar" />
+    </div>
+
+    <div class="field">
+      <label for="instDesc">Descripción institucional</label>
+      <textarea id="instDesc" rows="4" placeholder="Breve reseña sobre la institución, enfoque académico y trayectoria..."></textarea>
+    </div>
+
+    <div class="form-row-2">
+      <div class="field">
+        <label for="instEstado">Estado</label>
+        <select id="instEstado">
+          <option value="">Seleccione estado</option>
+          <option value="Amazonas">Amazonas</option>
+          <option value="Anzoátegui">Anzoátegui</option>
+          <option value="Apure">Apure</option>
+          <option value="Aragua">Aragua</option>
+          <option value="Barinas">Barinas</option>
+          <option value="Bolívar">Bolívar</option>
+          <option value="Carabobo">Carabobo</option>
+          <option value="Cojedes">Cojedes</option>
+          <option value="Delta Amacuro">Delta Amacuro</option>
+          <option value="Distrito Capital">Distrito Capital</option>
+          <option value="Falcón">Falcón</option>
+          <option value="Guárico">Guárico</option>
+          <option value="La Guaira">La Guaira</option>
+          <option value="Lara">Lara</option>
+          <option value="Mérida">Mérida</option>
+          <option value="Miranda">Miranda</option>
+          <option value="Monagas">Monagas</option>
+          <option value="Nueva Esparta">Nueva Esparta</option>
+          <option value="Portuguesa">Portuguesa</option>
+          <option value="Sucre">Sucre</option>
+          <option value="Táchira">Táchira</option>
+          <option value="Trujillo">Trujillo</option>
+          <option value="Yaracuy">Yaracuy</option>
+          <option value="Zulia">Zulia</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="instCiudad">Ciudad / Municipio</label>
+        <input type="text" id="instCiudad" placeholder="Ej. Caracas / Sartenejas" />
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="font-size:16px;font-weight:700;margin-bottom:16px;color:var(--navy);">Detalles y contacto</h3>
+    
+    <div class="form-row-2">
+      <div class="field">
+        <label for="instType">Tipo de institución</label>
+        <select id="instType">
+          <option value="UNIVERSIDAD">Universidad</option>
+          <option value="TSU">TSU / Instituto Universitario</option>
+          <option value="ACADEMIA">Academia</option>
+          <option value="CURSO">Centro de formación</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="instGestion">Régimen de gestión</label>
+        <select id="instGestion">
+          <option value="PUBLICA">Pública</option>
+          <option value="PRIVADA">Privada</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row-2">
+      <div class="field">
+        <label for="instWebsite">Sitio web oficial</label>
+        <input type="url" id="instWebsite" placeholder="https://www.usb.ve" />
+      </div>
+      <div class="field">
+        <label for="instPhone">Teléfono de contacto</label>
+        <input type="text" id="instPhone" placeholder="+58 212 9063111" />
+      </div>
+    </div>
+
+    <div class="field" style="margin-top:10px;">
+      <label class="checkbox-row" style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+        <input id="instAccredited" type="checkbox" style="width:16px;height:16px;accent-color:var(--navy);" />
+        Institución con acreditación oficial nacional
+      </label>
+    </div>
+  </div>
+</div>
+
+<div class="save-bar" style="margin-top:24px;display:flex;align-items:center;gap:16px;">
+  <button id="saveBtn" class="btn btn--solid">Guardar cambios</button>
+  <div id="saveFeedback" style="font-size:14px;font-weight:600;"></div>
+</div>
+
+<style>
+  .editor-shell {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-items: flex-start;
+  }
+  .card {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+  }
+  .field {
+    margin-bottom: 16px;
+  }
+  .field label {
+    display: block;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+  .field input, .field select, .field textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--ink);
+    background: var(--paper);
+    box-sizing: border-box;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus {
+    background: #ffffff;
+    border-color: var(--blue-bright);
+    outline: none;
+  }
+  .form-row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  @media (max-width: 900px) {
+    .editor-shell { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script type="module">
+  let currentInstId = 5;
+  let authToken = '';
+
+  const nameInput = document.getElementById('instName');
+  const descInput = document.getElementById('instDesc');
+  const estadoSelect = document.getElementById('instEstado');
+  const ciudadInput = document.getElementById('instCiudad');
+  const typeSelect = document.getElementById('instType');
+  const gestionSelect = document.getElementById('instGestion');
+  const websiteInput = document.getElementById('instWebsite');
+  const phoneInput = document.getElementById('instPhone');
+  const accreditedCheck = document.getElementById('instAccredited');
+  const saveBtn = document.getElementById('saveBtn');
+  const feedbackEl = document.getElementById('saveFeedback');
+  const previewBtn = document.getElementById('previewBtn');
+
+  function getSessionInfo() {
+    authToken = localStorage.getItem('auth_token') || '';
+    try {
+      const raw = localStorage.getItem('user_session');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (!authToken && parsed?.token) authToken = parsed.token;
+        if (parsed?.user?.institutionId) currentInstId = parsed.user.institutionId;
+      }
+    } catch (e) {}
+  }
+
+  async function loadInstitutionData() {
+    getSessionInfo();
+    try {
+      const res = await fetch(`/api/institutions/${currentInstId}`);
+      if (!res.ok) {
+        const fallbackRes = await fetch('/api/institutions?limit=1');
+        const fallbackData = await fallbackRes.json();
+        if (fallbackData.data && fallbackData.data.length > 0) {
+          populateForm(fallbackData.data[0]);
+          return;
+        }
+      }
+      const data = await res.json();
+      populateForm(data);
+    } catch (err) {
+      console.error('Error al cargar datos institucionales:', err);
+    }
+  }
+
+  function populateForm(data) {
+    if (!data) return;
+    currentInstId = data.id || currentInstId;
+    if (previewBtn) previewBtn.href = `/institucion-perfil?id=${currentInstId}`;
+    nameInput.value = data.name || '';
+    descInput.value = data.description || '';
+    estadoSelect.value = data.estado || '';
+    ciudadInput.value = data.ciudad || '';
+    typeSelect.value = data.type || 'UNIVERSIDAD';
+    gestionSelect.value = data.gestion || 'PUBLICA';
+    websiteInput.value = data.website || '';
+    phoneInput.value = data.phone || '';
+    accreditedCheck.checked = Boolean(data.is_accredited);
+  }
+
+  saveBtn.addEventListener('click', async () => {
+    getSessionInfo();
+    if (!authToken) {
+      feedbackEl.style.color = 'var(--stamp)';
+      feedbackEl.textContent = 'Debes iniciar sesión para guardar cambios.';
+      setTimeout(() => { window.location.href = '/login'; }, 1500);
+      return;
+    }
+
+    const payload = {
+      name: nameInput.value.trim(),
+      description: descInput.value.trim(),
+      estado: estadoSelect.value,
+      ciudad: ciudadInput.value.trim(),
+      type: typeSelect.value,
+      gestion: gestionSelect.value,
+      website: websiteInput.value.trim() || null,
+      phone: phoneInput.value.trim() || null,
+      is_accredited: accreditedCheck.checked
+    };
+
+    try {
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Guardando…';
+      feedbackEl.textContent = '';
+
+      const response = await fetch(`/api/institutions/${currentInstId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}`
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        feedbackEl.style.color = 'var(--green)';
+        feedbackEl.textContent = '✓ Configuración guardada correctamente. Revisa la Vista previa.';
+        if (previewBtn) previewBtn.href = `/institucion-perfil?id=${currentInstId}`;
+      } else {
+        feedbackEl.style.color = 'var(--stamp)';
+        feedbackEl.textContent = result.error || 'Error al guardar los cambios.';
+      }
+    } catch (e) {
+      feedbackEl.style.color = 'var(--stamp)';
+      feedbackEl.textContent = 'Error de conexión con el servidor.';
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.textContent = 'Guardar cambios';
+    }
+  });
+
+  loadInstitutionData();
+</script>
+</AppShellLayout>

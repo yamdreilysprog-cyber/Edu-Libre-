@@ -1,0 +1,172 @@
+---
+import PublicLayout from '../layouts/PublicLayout.astro';
+---
+<PublicLayout title="Cómo funciona — EduLibre" description="Aprende cómo buscar carreras universitarias, cursos técnicos y programas académicos en Venezuela con EduLibre." navVariant="full">
+<div class="how-hero">
+  <div class="wrap">
+    <span class="mono eyebrow">Guía de uso</span>
+    <h1>Educación superior transparente y accesible para todos</h1>
+    <p>Conoce cómo funciona la plataforma tanto si eres estudiante en busca de formación como si representas a una institución educativa.</p>
+  </div>
+</div>
+
+<div class="wrap" style="padding:60px 20px;">
+  <section class="how-section">
+    <div class="section-title">
+      <span class="step-num">Para Estudiantes</span>
+      <h2>Encuentra tu vocación en 3 sencillos pasos</h2>
+    </div>
+
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-badge">1</div>
+        <h3>Explora y Filtra</h3>
+        <p>Busca entre cientos de carreras universitarias, TSU, diplomados y talleres organizados por área, ubicación geográfica, costo y modalidad.</p>
+      </div>
+
+      <div class="step-card">
+        <div class="step-badge">2</div>
+        <h3>Compara Opciones</h3>
+        <p>Revisa la duración en semestres, requisitos de ingreso, títulos otorgados y acreditación oficial de cada casa de estudio.</p>
+      </div>
+
+      <div class="step-card">
+        <div class="step-badge">3</div>
+        <h3>Guarda tus Favoritos</h3>
+        <p>Crea tu cuenta gratuita para armar tu lista de programas preferidos y hacer seguimiento a las convocatorias de admisión.</p>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:32px;">
+      <a href="/results" class="btn btn--solid">Explorar catálogo ahora</a>
+    </div>
+  </section>
+
+  <hr style="border:none;border-top:1px solid var(--border);margin:60px 0;" />
+
+  <section class="how-section">
+    <div class="section-title">
+      <span class="step-num">Para Instituciones</span>
+      <h2>Publica tu oferta académica ante miles de postulantes</h2>
+    </div>
+
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-badge">1</div>
+        <h3>Crea tu Perfil</h3>
+        <p>Registra los datos de tu universidad o instituto técnico con logo, ubicación y descripción institucional.</p>
+      </div>
+
+      <div class="step-card">
+        <div class="step-badge">2</div>
+        <h3>Publica tus Carreras</h3>
+        <p>Carga el catálogo completo de programas con modalidades (presencial, online o híbrida) y planes de estudio.</p>
+      </div>
+
+      <div class="step-card">
+        <div class="step-badge">3</div>
+        <h3>Recibe Aspirantes</h3>
+        <p>Aparece de forma destacada en los resultados de búsqueda de los bachilleres de toda Venezuela.</p>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:32px;">
+      <a href="/registro-institucion" class="btn btn--stamp">Registrar institución</a>
+    </div>
+  </section>
+</div>
+</PublicLayout>
+
+<style>
+  .how-hero {
+    background: var(--navy);
+    color: #ffffff;
+    padding: 72px 0 60px;
+    text-align: center;
+  }
+  .how-hero .eyebrow {
+    color: #F0DDBB;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: inline-block;
+  }
+  .how-hero h1 {
+    font-size: clamp(28px, 3.8vw, 42px);
+    color: #ffffff;
+    max-width: 680px;
+    margin: 0 auto 16px;
+    font-weight: 900;
+  }
+  .how-hero p {
+    color: #C4D0E8;
+    max-width: 580px;
+    margin: 0 auto;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  .section-title {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .section-title .step-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12.5px;
+    color: var(--blue);
+    font-weight: 700;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 6px;
+  }
+  .section-title h2 {
+    font-size: clamp(22px, 2.8vw, 30px);
+    color: var(--navy);
+    font-weight: 800;
+    margin: 0;
+  }
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .step-card {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 24px;
+    box-shadow: 0 2px 8px rgba(20, 33, 61, 0.04);
+    position: relative;
+  }
+  .step-badge {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--navy);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 16px;
+    margin-bottom: 18px;
+  }
+  .step-card h3 {
+    font-size: 17px;
+    color: var(--navy);
+    margin: 0 0 10px 0;
+    font-weight: 700;
+  }
+  .step-card p {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+  }
+  @media (max-width: 768px) {
+    .steps-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

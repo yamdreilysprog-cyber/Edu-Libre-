@@ -1,0 +1,23 @@
+---
+import AppShellLayout from '../../layouts/AppShellLayout.astro';
+---
+<AppShellLayout
+  title="Auditoría de contenido — EduLibre"
+  pageTitle="Auditoría de contenido"
+  role="admin"
+  active="auditoria"
+  userInitials="AD"
+  userLabel="Admin"
+>
+<p style="color:var(--muted);font-size:14px;margin-bottom:20px;max-width:560px;">Reportes enviados por estudiantes o detectados automáticamente sobre información desactualizada, incorrecta o sospechosa.</p>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Institución / Carrera</th><th>Motivo del reporte</th><th>Reportado por</th><th>Estado</th><th></th></tr></thead>
+<tbody>
+<tr><td>UDO — Ingeniería Pesquera</td><td>Duración incorrecta</td><td>Estudiante</td><td><span class="badge badge--pending">Abierto</span></td><td><button class="btn btn--ghost btn--sm">Revisar</button></td></tr>
+<tr><td>Academia XYZ — Curso de Marketing</td><td>Costo no coincide con el sitio real</td><td>Estudiante</td><td><span class="badge badge--pending">Abierto</span></td><td><button class="btn btn--ghost btn--sm">Revisar</button></td></tr>
+<tr><td>UCAB — Derecho</td><td>Requisitos desactualizados</td><td>Sistema automático</td><td><span class="badge badge--approved">Resuelto</span></td><td><button class="btn btn--ghost btn--sm">Ver</button></td></tr>
+</tbody>
+</table>
+</div>
+</AppShellLayout>

@@ -1,0 +1,30 @@
+---
+import AppShellLayout from '../../layouts/AppShellLayout.astro';
+---
+<AppShellLayout
+  title="Verificación de cuenta — EduLibre"
+  pageTitle="Verificación de cuenta"
+  role="estudiante"
+  active="verificacion"
+  userInitials="MG"
+  userLabel="María González"
+>
+<div class="card" style="max-width:440px;">
+<span class="badge badge--pending" style="margin-bottom:14px;">Pendiente</span>
+<h3 style="font-size:17px;margin-bottom:8px;">Confirma tu correo</h3>
+<p style="color:var(--muted);font-size:14px;margin:0 0 6px;">Enviamos un código de 6 dígitos a <b>maria.g@correo.com</b>.</p>
+<div class="code-inputs">
+<input maxlength="1" type="text"/><input maxlength="1" type="text"/><input maxlength="1" type="text"/>
+<input maxlength="1" type="text"/><input maxlength="1" type="text"/><input maxlength="1" type="text"/>
+</div>
+<button class="btn btn--solid" style="width:100%;">Verificar código</button>
+<p style="text-align:center;font-size:13px;color:var(--muted);margin-top:14px;">¿No llegó? <a href="#" style="color:var(--blue);font-weight:600;">Reenviar código</a></p>
+</div>
+</AppShellLayout>
+
+<style>
+
+  .code-inputs{display:flex;gap:10px;margin:20px 0;}
+  .code-inputs input{width:48px;height:56px;text-align:center;font-size:20px;font-family:'IBM Plex Mono',monospace;}
+
+</style>

@@ -1,0 +1,193 @@
+---
+import PublicLayout from '../layouts/PublicLayout.astro';
+---
+<PublicLayout title="Crear cuenta — EduLibre" description="Regístrate gratis en EduLibre para guardar tus carreras y cursos favoritos." navVariant="ghost-only">
+<div class="auth-shell">
+  <div class="form-card">
+    <div class="auth-tabs">
+      <a href="/login">Ingresar</a>
+      <a class="active" href="/registro">Crear cuenta</a>
+    </div>
+
+    <h1 style="font-size:22px;margin-bottom:6px;">Crea tu cuenta de estudiante</h1>
+    <p style="color:var(--muted);font-size:14px;margin:0 0 22px;">Guarda tus carreras favoritas y recibe alertas de admisión.</p>
+
+    <div id="register-status" style="display:none;padding:12px;border-radius:var(--radius-sm);margin-bottom:18px;font-size:13.5px;text-align:center;"></div>
+
+    <form id="register-form">
+      <div class="form-row-2" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="field">
+          <label for="nombre">Nombre</label>
+          <input id="nombre" name="nombre" placeholder="Juan" type="text" required />
+        </div>
+        <div class="field">
+          <label for="apellido">Apellido</label>
+          <input id="apellido" name="apellido" placeholder="Pérez" type="text" required />
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="email">Correo electrónico</label>
+        <input id="email" name="email" placeholder="tu@correo.com" type="email" required />
+      </div>
+
+      <div class="field">
+        <label for="password">Contraseña (mínimo 8 caracteres)</label>
+        <input id="password" name="password" placeholder="••••••••" type="password" minlength="8" required />
+      </div>
+
+      <button id="registerBtn" class="btn btn--solid" style="width:100%;margin-top:10px;" type="submit">
+        Registrarme gratis
+      </button>
+    </form>
+
+    <div class="auth-divider">o</div>
+    <p style="text-align:center;font-size:13.5px;color:var(--muted);margin:0;">
+      ¿Eres una universidad o instituto? <a href="/registro-institucion" style="color:var(--blue);font-weight:600;">Registrar institución</a>
+    </p>
+  </div>
+</div>
+</PublicLayout>
+
+<style>
+  .auth-shell {
+    min-height: calc(100vh - 76px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 20px;
+  }
+  .form-card {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 36px 32px;
+    max-width: 440px;
+    width: 100%;
+    box-shadow: 0 4px 20px rgba(20, 33, 61, 0.06);
+  }
+  .auth-tabs {
+    display: flex;
+    gap: 6px;
+    background: var(--paper-dim);
+    padding: 4px;
+    border-radius: 999px;
+    margin-bottom: 26px;
+  }
+  .auth-tabs a {
+    flex: 1;
+    text-align: center;
+    padding: 9px;
+    border-radius: 999px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .auth-tabs a.active {
+    background: #ffffff;
+    color: var(--navy);
+    box-shadow: 0 2px 6px rgba(20, 33, 61, 0.08);
+  }
+  .field {
+    margin-bottom: 16px;
+  }
+  .field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+  .field input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    box-sizing: border-box;
+  }
+  .field input:focus {
+    border-color: var(--blue-bright);
+    outline: none;
+  }
+  .auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0;
+    color: var(--muted);
+    font-size: 12.5px;
+  }
+  .auth-divider::before, .auth-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+</style>
+
+<script type="module">
+  const regForm = document.getElementById('register-form');
+  const statusEl = document.getElementById('register-status');
+  const regBtn = document.getElementById('registerBtn');
+
+  if (regForm) {
+    regForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(regForm);
+      const nombre = formData.get('nombre')?.toString().trim();
+      const apellido = formData.get('apellido')?.toString().trim();
+      const name = `${nombre} ${apellido}`.trim();
+      const email = formData.get('email')?.toString().trim();
+      const password = formData.get('password')?.toString();
+
+      try {
+        regBtn.disabled = true;
+        regBtn.textContent = 'Creando cuenta…';
+        statusEl.style.display = 'none';
+
+        const response = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password })
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+          statusEl.style.display = 'block';
+          statusEl.style.background = 'var(--green-bg)';
+          statusEl.style.color = 'var(--green)';
+          statusEl.textContent = '¡Cuenta creada con éxito! Redirigiendo...';
+
+          if (result.token) {
+            localStorage.setItem('auth_token', result.token);
+            localStorage.setItem('role', 'STUDENT');
+            localStorage.setItem('user_session', JSON.stringify({
+              isAuthenticated: true,
+              user: result.user || { role: 'STUDENT' },
+              token: result.token
+            }));
+            document.cookie = `auth_token=${encodeURIComponent(result.token)}; path=/; max-age=2592000; SameSite=Lax`;
+            document.cookie = `user_role=STUDENT; path=/; max-age=2592000; SameSite=Lax`;
+          }
+
+          setTimeout(() => { window.location.href = '/estudiante/panel'; }, 1000);
+        } else {
+          statusEl.style.display = 'block';
+          statusEl.style.background = '#FEECEB';
+          statusEl.style.color = 'var(--stamp)';
+          statusEl.textContent = result.error || 'Error al crear la cuenta.';
+        }
+      } catch (err) {
+        statusEl.style.display = 'block';
+        statusEl.style.background = '#FEECEB';
+        statusEl.style.color = 'var(--stamp)';
+        statusEl.textContent = 'Error de conexión con el servidor.';
+      } finally {
+        regBtn.disabled = false;
+        regBtn.textContent = 'Registrarme gratis';
+      }
+    });
+  }
+</script>

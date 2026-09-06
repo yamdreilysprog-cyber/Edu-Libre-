@@ -1,0 +1,33 @@
+---
+import AppShellLayout from '../../layouts/AppShellLayout.astro';
+---
+<AppShellLayout
+  title="Mi panel — EduLibre"
+  pageTitle="Mi panel"
+  role="estudiante"
+  active="panel"
+  userInitials="MG"
+  userLabel="María González"
+>
+<div class="grid-3" style="margin-bottom:28px;">
+<div class="stat-card"><span class="num">4</span><span class="label">Favoritos guardados</span></div>
+<div class="stat-card"><span class="num">Sin verificar</span><span class="label">Estado de la cuenta</span></div>
+<div class="stat-card"><span class="num">2026</span><span class="label">Cohorte de bachillerato</span></div>
+</div>
+<div class="card" style="margin-bottom:20px;">
+<h3 style="font-size:16px;margin-bottom:6px;">Verifica tu cuenta</h3>
+<p style="color:var(--muted);font-size:14px;margin:0 0 14px;">Confirma tu correo para poder postularte a carreras directamente desde EduLibre.</p>
+<a class="btn btn--solid btn--sm" href="/estudiante/verificacion">Verificar ahora</a>
+</div>
+<h3 style="font-size:16px;margin-bottom:12px;">Tus últimos favoritos</h3>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Carrera</th><th>Institución</th><th>Modalidad</th><th></th></tr></thead>
+<tbody>
+<tr><td>Ingeniería de Sistemas</td><td>USB</td><td>Presencial</td><td><a class="btn btn--ghost btn--sm" href="/curso">Ver</a></td></tr>
+<tr><td>Medicina</td><td>UCV</td><td>Presencial</td><td><a class="btn btn--ghost btn--sm" href="/curso">Ver</a></td></tr>
+<tr><td>Inglés Intensivo</td><td>Online</td><td>Online</td><td><a class="btn btn--ghost btn--sm" href="/curso">Ver</a></td></tr>
+</tbody>
+</table>
+</div>
+</AppShellLayout>

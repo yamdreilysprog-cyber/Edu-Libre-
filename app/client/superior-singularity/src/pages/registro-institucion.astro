@@ -1,0 +1,177 @@
+---
+import PublicLayout from '../layouts/PublicLayout.astro';
+---
+<PublicLayout title="Registro de Institución — EduLibre" description="Registra tu universidad o instituto en EduLibre para publicar tu oferta académica." navVariant="ghost-only">
+<div class="auth-shell">
+  <div class="form-card form-card--wide">
+    <h1 style="font-size:22px;margin-bottom:6px;">Registrar Institución Educativa</h1>
+    <p style="color:var(--muted);font-size:14px;margin:0 0 24px;">Publica tu oferta académica ante miles de postulantes en Venezuela.</p>
+
+    <div id="inst-status" style="display:none;padding:12px;border-radius:var(--radius-sm);margin-bottom:18px;font-size:13.5px;text-align:center;"></div>
+
+    <form id="inst-form">
+      <h3 style="font-size:15px;font-weight:700;color:var(--navy);margin:0 0 14px;">Datos de la persona de contacto</h3>
+      <div class="form-row-2">
+        <div class="field">
+          <label for="contactName">Nombre completo del contacto</label>
+          <input id="contactName" name="name" placeholder="Ej. Prof. María Rodríguez" type="text" required />
+        </div>
+        <div class="field">
+          <label for="contactEmail">Correo electrónico oficial</label>
+          <input id="contactEmail" name="email" placeholder="admisiones@institucion.edu.ve" type="email" required />
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="contactPass">Contraseña de acceso</label>
+        <input id="contactPass" name="password" placeholder="••••••••" type="password" minlength="8" required />
+      </div>
+
+      <h3 style="font-size:15px;font-weight:700;color:var(--navy);margin:20px 0 14px;">Datos de la institución</h3>
+      <div class="form-row-2">
+        <div class="field">
+          <label for="instName">Nombre público de la institución</label>
+          <input id="instName" name="inst_name" placeholder="Ej. Instituto Universitario de Tecnología" type="text" required />
+        </div>
+        <div class="field">
+          <label for="instType">Tipo de institución</label>
+          <select id="instType" name="inst_type" required>
+            <option value="UNIVERSIDAD">Universidad</option>
+            <option value="TSU">TSU / Instituto Universitario</option>
+            <option value="ACADEMIA">Academia</option>
+            <option value="CURSO">Centro de formación</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row-2">
+        <div class="field">
+          <label for="instEstado">Estado</label>
+          <select id="instEstado" name="inst_estado" required>
+            <option value="Distrito Capital">Distrito Capital</option>
+            <option value="Miranda">Miranda</option>
+            <option value="Carabobo">Carabobo</option>
+            <option value="Aragua">Aragua</option>
+            <option value="Zulia">Zulia</option>
+            <option value="Lara">Lara</option>
+            <option value="Mérida">Mérida</option>
+            <option value="Anzoátegui">Anzoátegui</option>
+            <option value="Bolívar">Bolívar</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="instCiudad">Ciudad</label>
+          <input id="instCiudad" name="inst_ciudad" placeholder="Ej. Caracas" type="text" required />
+        </div>
+      </div>
+
+      <button id="instRegBtn" class="btn btn--stamp" style="width:100%;margin-top:14px;" type="submit">
+        Solicitar registro de institución
+      </button>
+    </form>
+  </div>
+</div>
+</PublicLayout>
+
+<style>
+  .auth-shell {
+    min-height: calc(100vh - 76px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 20px;
+  }
+  .form-card--wide {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 36px 32px;
+    max-width: 580px;
+    width: 100%;
+    box-shadow: 0 4px 20px rgba(20, 33, 61, 0.06);
+  }
+  .form-row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .field {
+    margin-bottom: 14px;
+  }
+  .field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+  .field input, .field select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    box-sizing: border-box;
+  }
+  @media (max-width: 600px) {
+    .form-row-2 { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script type="module">
+  const instForm = document.getElementById('inst-form');
+  const statusEl = document.getElementById('inst-status');
+  const regBtn = document.getElementById('instRegBtn');
+
+  if (instForm) {
+    instForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(instForm);
+      const payload = {
+        name: formData.get('name')?.toString().trim(),
+        email: formData.get('email')?.toString().trim(),
+        password: formData.get('password')?.toString(),
+        institution: {
+          name: formData.get('inst_name')?.toString().trim(),
+          type: formData.get('inst_type')?.toString(),
+          estado: formData.get('inst_estado')?.toString(),
+          ciudad: formData.get('inst_ciudad')?.toString().trim()
+        }
+      };
+
+      try {
+        regBtn.disabled = true;
+        regBtn.textContent = 'Enviando solicitud…';
+        statusEl.style.display = 'none';
+
+        const response = await fetch('/api/auth/register-institution', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+          statusEl.style.display = 'block';
+          statusEl.style.background = 'var(--green-bg)';
+          statusEl.style.color = 'var(--green)';
+          statusEl.textContent = '¡Registro recibido! Tu solicitud está en proceso de verificación. Redirigiendo a inicio de sesión...';
+          setTimeout(() => { window.location.href = '/login'; }, 2000);
+        } else {
+          statusEl.style.display = 'block';
+          statusEl.style.background = '#FEECEB';
+          statusEl.style.color = 'var(--stamp)';
+          statusEl.textContent = result.error || 'Error al registrar la institución.';
+        }
+      } catch (err) {
+        statusEl.style.display = 'block';
+        statusEl.style.background = '#FEECEB';
+        statusEl.style.color = 'var(--stamp)';
+        statusEl.textContent = 'Error de conexión con el servidor.';
+      } finally {
+        regBtn.disabled = false;
+        regBtn.textContent = 'Solicitar registro de institución';
+      }
+    });
+  }
+</script>

@@ -1,0 +1,204 @@
+---
+export const prerender = false;
+import PublicLayout from '../layouts/PublicLayout.astro';
+
+const requestedId = Astro.url.searchParams.get('id') || Astro.url.searchParams.get('institutionId') || '5';
+const apiUrl = process.env.API_URL || 'http://localhost:3000';
+
+let institution = null;
+let programs = [];
+let errorMessage = '';
+
+try {
+  const res = await fetch(`${apiUrl}/api/institutions/${requestedId}`);
+  if (res.ok) {
+    institution = await res.json();
+    programs = Array.isArray(institution?.programs) ? institution.programs : [];
+  } else {
+    const listRes = await fetch(`${apiUrl}/api/institutions?limit=1`);
+    if (listRes.ok) {
+      const listData = await listRes.json();
+      if (listData.data && listData.data.length > 0) {
+        institution = listData.data[0];
+        programs = Array.isArray(institution?.programs) ? institution.programs : [];
+      }
+    }
+    if (!institution) errorMessage = 'No se encontró la institución solicitada.';
+  }
+} catch (e) {
+  errorMessage = 'Error al cargar los datos de la institución.';
+}
+
+const pageTitle = institution
+  ? `${institution.name} — Perfil Institucional — EduLibre`
+  : 'Perfil Institucional — EduLibre';
+
+const locationText = [institution?.ciudad, institution?.estado, 'Venezuela'].filter(Boolean).join(', ');
+---
+
+<PublicLayout title={pageTitle} description="" navVariant="full">
+<div class="wrap">
+  {!institution ? (
+    <div class="not-found-card">
+      <h2>Institución no encontrada</h2>
+      <p>{errorMessage || 'El perfil que buscas no está disponible en este momento.'}</p>
+      <a href="/results" class="btn btn--solid">Explorar instituciones</a>
+    </div>
+  ) : (
+    <>
+      <div class="breadcrumb" style="padding-top:24px;">
+        <a href="/">Inicio</a> / <a href="/results">Instituciones</a> / <span class="breadcrumb-current">{institution.name}</span>
+      </div>
+
+      <section class="inst-hero">
+        <div class="inst-hero__main">
+          <div class="inst-hero__badge-row">
+            <span class="badge badge--type">{institution.type || 'UNIVERSIDAD'}</span>
+            <span class="badge badge--gestion">{institution.gestion === 'PUBLICA' ? 'Pública' : 'Privada'}</span>
+            {institution.is_accredited && <span class="badge badge--accredited">Acreditada</span>}
+          </div>
+          <h1 class="inst-hero__title">{institution.name}</h1>
+          <div class="inst-hero__meta">
+            {locationText && <span class="meta-item">{locationText}</span>}
+            {institution.phone && <span class="meta-item">{institution.phone}</span>}
+          </div>
+        </div>
+
+        <div class="inst-hero__actions">
+          <button class="btn btn--solid" id="favInstBtn" data-inst-id={institution.id}>
+            Guardar en favoritos
+          </button>
+          {institution.website && (
+            <a class="btn btn--ghost" href={institution.website} target="_blank" rel="noopener noreferrer">
+              Sitio web oficial ↗
+            </a>
+          )}
+          <div id="instFavFeedback" class="fav-feedback"></div>
+        </div>
+      </section>
+
+      <div class="inst-grid">
+        <div class="inst-content">
+          <section class="inst-section">
+            <h2>Acerca de la institución</h2>
+            <p class="inst-desc">
+              {institution.description || 'Institución de educación superior dedicada a la formación académica, investigación y extensión técnica.'}
+            </p>
+          </section>
+
+          <section class="inst-section">
+            <div class="section-head">
+              <h2>Oferta académica publicada</h2>
+              <span class="badge badge--type">{programs.length} carreras</span>
+            </div>
+
+            {programs.length === 0 ? (
+              <div class="empty-box">
+                <p>Esta institución aún no tiene carreras publicadas activas en el catálogo.</p>
+              </div>
+            ) : (
+              <div class="program-cards-list">
+                {programs.map((prog) => (
+                  <a class="inst-prog-card" href={`/curso?id=${prog.id}&institutionId=${institution.id}`}>
+                    <div class="inst-prog-card__body">
+                      <div class="inst-prog-card__header">
+                        <h3>{prog.name}</h3>
+                        <span class="arrow">→</span>
+                      </div>
+                      <span class="prog-meta">
+                        {prog.duration ? prog.duration : 'Duración estándar'} · {prog.modality || 'Presencial'}
+                      </span>
+                      <div class="prog-tags">
+                        <span class="badge badge--type">{prog.type}</span>
+                        <span class="badge badge--modality">{prog.modality}</span>
+                        <span class={`badge ${prog.is_free ? 'badge--free' : 'badge--cost'}`}>
+                          {prog.is_free ? 'Gratuita' : 'Con matrícula'}
+                        </span>
+                      </div>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            )}
+          </section>
+        </div>
+
+        <aside class="inst-sidebar">
+          <div class="fact-card">
+            <h3 class="fact-card__title">Información Institucional</h3>
+            <div class="fact-row"><span>Régimen</span><span>{institution.gestion === 'PUBLICA' ? 'Pública' : 'Privada'}</span></div>
+            <div class="fact-row"><span>Tipo</span><span>{institution.type || 'Universidad'}</span></div>
+            <div class="fact-row"><span>Estado</span><span>{institution.estado || 'No especificado'}</span></div>
+            <div class="fact-row"><span>Ciudad</span><span>{institution.ciudad || 'No especificada'}</span></div>
+            <div class="fact-row"><span>Acreditación</span><span>{institution.is_accredited ? 'Verificada y oficial' : 'En proceso'}</span></div>
+            <div class="fact-row"><span>Ofertas activas</span><span>{programs.length} programas</span></div>
+
+            <div class="fact-card__foot">
+              <a href="/results" class="btn btn--outline btn--sm" style="width:100%;">
+                ← Explorar otras instituciones
+              </a>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </>
+  )}
+</div>
+</PublicLayout>
+
+<style>
+  .inst-hero {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px 36px;
+    margin: 24px 0 36px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    box-shadow: 0 2px 10px rgba(20, 33, 61, 0.04);
+  }
+  .inst-hero__main { flex: 1; min-width: 280px; }
+  .inst-hero__badge-row { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+  .inst-hero__title { font-size: clamp(24px, 3.2vw, 34px); font-weight: 900; color: var(--navy); margin: 0 0 10px 0; }
+  .inst-hero__meta { display: flex; gap: 18px; color: var(--muted); font-size: 14px; flex-wrap: wrap; }
+  .inst-hero__actions { display: flex; flex-direction: column; gap: 10px; min-width: 200px; }
+  .inst-hero__actions .btn { width: 100%; }
+  .inst-grid { display: flex; flex-direction: row; gap: 36px; padding-bottom: 80px; align-items: flex-start; }
+  .inst-content { flex: 1; min-width: 0; }
+  .inst-section { margin-bottom: 40px; }
+  .inst-section h2 { font-size: 20px; font-weight: 800; color: var(--navy); margin: 0 0 14px 0; }
+  .section-head { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .section-head h2 { margin: 0; }
+  .inst-desc { color: var(--ink); font-size: 15.5px; line-height: 1.7; max-width: 680px; }
+  .program-cards-list { display: flex; flex-direction: column; gap: 14px; }
+  .inst-prog-card { display: block; background: #ffffff; border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 22px; text-decoration: none; color: var(--ink); box-shadow: 0 1px 4px rgba(20, 33, 61, 0.03); }
+  .inst-prog-card:hover { transform: translateY(-2px); border-color: var(--blue-bright); box-shadow: 0 6px 20px rgba(20, 33, 61, 0.08); }
+  .inst-prog-card__header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .inst-prog-card__header h3 { font-size: 16.5px; font-weight: 700; color: var(--navy); margin: 0; }
+  .prog-meta { font-size: 13.5px; color: var(--muted); display: block; margin-bottom: 10px; }
+  .prog-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .badge { font-size: 11px; padding: 3px 10px; border-radius: 999px; font-weight: 600; font-family: 'IBM Plex Mono', monospace; }
+  .badge--type { background: #E8EEF9; color: var(--blue); }
+  .badge--gestion { background: var(--paper-dim); color: var(--ink); }
+  .badge--modality { background: #F3EBF9; color: #6B348A; }
+  .badge--free { background: var(--green-bg); color: var(--green); }
+  .badge--cost { background: #F5EAE1; color: #8A4F1D; }
+  .badge--accredited { background: var(--amber-bg); color: var(--amber); }
+  .inst-sidebar { width: 300px; min-width: 300px; position: sticky; top: 96px; }
+  .fact-card { background: #ffffff; border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; box-shadow: 0 2px 8px rgba(20, 33, 61, 0.04); }
+  .fact-card__title { font-size: 15.5px; font-weight: 700; color: var(--navy); margin: 0 0 14px 0; padding-bottom: 10px; border-bottom: 1px solid var(--paper-dim); }
+  .fact-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; padding: 9px 0; border-bottom: 1px solid var(--border); }
+  .fact-row:last-of-type { border-bottom: none; }
+  .fact-row span:first-child { color: var(--muted); }
+  .fact-row span:last-child { font-weight: 600; color: var(--navy); text-align: right; }
+  .fact-card__foot { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--paper-dim); }
+  .fav-feedback { margin-top: 6px; font-size: 12.5px; text-align: center; min-height: 18px; }
+  .empty-box { background: #ffffff; border: 1px dashed var(--border); border-radius: var(--radius); padding: 36px 20px; text-align: center; color: var(--muted); font-size: 14.5px; }
+  @media (max-width: 860px) {
+    .inst-grid { flex-direction: column; }
+    .inst-sidebar { width: 100%; min-width: 100%; position: static; }
+  }
+</style>

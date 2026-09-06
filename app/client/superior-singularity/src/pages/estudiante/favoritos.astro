@@ -1,0 +1,36 @@
+---
+import AppShellLayout from '../../layouts/AppShellLayout.astro';
+---
+<AppShellLayout
+  title="Mis favoritos — EduLibre"
+  pageTitle="Mis favoritos"
+  role="estudiante"
+  active="favoritos"
+  userInitials="MG"
+  userLabel="María González"
+>
+<div class="fav-card">
+<div><h4>Ingeniería de Sistemas</h4><span class="meta">USB — Miranda · Privada · Presencial</span></div>
+<div class="row-actions"><a class="btn btn--ghost btn--sm" href="/curso">Ver detalle</a><button class="btn btn--outline btn--sm">Quitar</button></div>
+</div>
+<div class="fav-card">
+<div><h4>Medicina</h4><span class="meta">UCV — Caracas · Pública · Presencial</span></div>
+<div class="row-actions"><a class="btn btn--ghost btn--sm" href="/curso">Ver detalle</a><button class="btn btn--outline btn--sm">Quitar</button></div>
+</div>
+<div class="fav-card">
+<div><h4>Inglés Intensivo</h4><span class="meta">Online · 3 meses</span></div>
+<div class="row-actions"><a class="btn btn--ghost btn--sm" href="/curso">Ver detalle</a><button class="btn btn--outline btn--sm">Quitar</button></div>
+</div>
+<div class="fav-card">
+<div><h4>Administración</h4><span class="meta">UCAB — Caracas · Privada · Mixta</span></div>
+<div class="row-actions"><a class="btn btn--ghost btn--sm" href="/curso">Ver detalle</a><button class="btn btn--outline btn--sm">Quitar</button></div>
+</div>
+</AppShellLayout>
+
+<style>
+
+  .fav-card{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:12px;flex-wrap:wrap;gap:12px;}
+  .fav-card h4{font-size:15.5px;margin-bottom:3px;}
+  .fav-card .meta{font-size:13px;color:var(--muted);}
+
+</style>

@@ -1,0 +1,33 @@
+---
+import AppShellLayout from '../../layouts/AppShellLayout.astro';
+---
+<AppShellLayout
+  title="Panel de administración — EduLibre"
+  pageTitle="Dashboard"
+  role="admin"
+  active="dashboard"
+  userInitials="AD"
+  userLabel="Admin"
+>
+<div class="grid-4" style="margin-bottom:28px;">
+<div class="stat-card"><span class="num">6</span><span class="label">Solicitudes pendientes</span></div>
+<div class="stat-card"><span class="num">142</span><span class="label">Instituciones activas</span></div>
+<div class="stat-card"><span class="num">2 340</span><span class="label">Estudiantes registrados</span></div>
+<div class="stat-card"><span class="num">3</span><span class="label">Reportes de contenido abiertos</span></div>
+</div>
+<div class="card" style="margin-bottom:24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+<div><h3 style="font-size:15.5px;margin-bottom:4px;">Tienes 6 instituciones esperando revisión</h3><p style="color:var(--muted);font-size:13.5px;margin:0;">La más antigua lleva 3 días en cola.</p></div>
+<a class="btn btn--solid btn--sm" href="/admin/aprobaciones">Revisar ahora</a>
+</div>
+<h3 style="font-size:15px;margin-bottom:12px;">Actividad reciente</h3>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Evento</th><th>Detalle</th><th>Fecha</th></tr></thead>
+<tbody>
+<tr><td>Institución aprobada</td><td>Instituto Universitario de Tecnología Caracas</td><td>Hoy</td></tr>
+<tr><td>Reporte de contenido</td><td>Carrera con información desactualizada — UDO</td><td>Ayer</td></tr>
+<tr><td>Nuevo registro</td><td>Academia Digital Venezuela</td><td>Hace 2 días</td></tr>
+</tbody>
+</table>
+</div>
+</AppShellLayout>

@@ -1,0 +1,55 @@
+---
+import PublicLayout from '../layouts/PublicLayout.astro';
+---
+<PublicLayout title="Para instituciones — EduLibre" description="" navVariant="institucion">
+<section class="b2b-hero">
+<div class="wrap">
+<span class="eyebrow mono">Para instituciones</span>
+<h1>Llega a los bachilleres que ya están buscando lo que ofreces</h1>
+<p>EduLibre centraliza la búsqueda de carreras y cursos en Venezuela. Publica tu oferta académica y aparece justo cuando un estudiante filtra por tu ubicación, modalidad o costo.</p>
+<a class="btn btn--stamp" href="/registro-institucion">Registrar mi institución</a>
+</div>
+</section>
+<section class="content">
+<div class="wrap">
+<span class="eyebrow">Cómo evoluciona el acceso</span>
+<div class="phase-grid" style="padding-top:0;">
+<div class="phase-card current">
+<span class="badge badge--pending" style="margin-bottom:10px;">Fase actual</span>
+<h3>Fase 1 Gratis para todos</h3>
+<p>Registro y publicación de tu oferta académica sin costo. Nuestro equipo te ayuda a cargar tu catálogo inicial mientras construimos tráfico.</p>
+</div>
+<div class="phase-card">
+<span class="badge badge--info" style="margin-bottom:10px;">Próximamente</span>
+<h3>Fase 2 Freemium</h3>
+<p>Cuando el portal valide tráfico real, se activa un plan de suscripción opcional con posicionamiento prioritario y banners destacados. El plan gratuito básico sigue disponible.</p>
+</div>
+</div>
+<span class="eyebrow">Lo que obtienes</span>
+<div class="grid-3" style="margin-bottom:40px;">
+<div class="card"><h3 style="font-size:15.5px;margin-bottom:6px;">Tu propio mini-sitio</h3><p style="font-size:13.5px;color:var(--muted);margin:0;">Galería, información técnica y planes de estudio, con tu identidad.</p></div>
+<div class="card"><h3 style="font-size:15.5px;margin-bottom:6px;">Panel de gestión</h3><p style="font-size:13.5px;color:var(--muted);margin:0;">Crea, edita y pausa tus carreras o cursos cuando quieras.</p></div>
+<div class="card"><h3 style="font-size:15.5px;margin-bottom:6px;">Verificación real</h3><p style="font-size:13.5px;color:var(--muted);margin:0;">Auditamos cada institución para que los estudiantes confíen en lo que ven.</p></div>
+</div>
+<div class="inst-banner" style="background:var(--navy);border-radius:var(--radius);padding:32px 36px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;">
+<div><h3 style="color:#fff;font-size:19px;">¿Listo para empezar?</h3><p style="color:#C4D0E8;font-size:14.5px;margin:6px 0 0;">Toma cinco minutos y tu solicitud queda en revisión.</p></div>
+<a class="btn btn--stamp" href="/registro-institucion">Registrar institución</a>
+</div>
+</div>
+</section>
+</PublicLayout>
+
+<style>
+
+  .b2b-hero{background:var(--navy);color:#fff;padding:80px 0 64px;text-align:center;}
+  .b2b-hero .eyebrow{color:#F0DDBB;}
+  .b2b-hero h1{font-size:clamp(30px,4vw,44px);color:#fff;max-width:680px;margin:0 auto 16px;}
+  .b2b-hero p{color:#C4D0E8;max-width:560px;margin:0 auto 28px;font-size:16px;line-height:1.6;}
+  .phase-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;padding:64px 0;}
+  .phase-card{border:1px solid var(--border);border-radius:var(--radius);padding:28px;background:#fff;}
+  .phase-card.current{border-color:var(--stamp);background:var(--stamp-bg);}
+  .phase-card h3{font-size:17px;margin-bottom:8px;}
+  .phase-card p{color:var(--muted);font-size:14.5px;line-height:1.6;}
+  @media (max-width:760px){.phase-grid{grid-template-columns:1fr;}}
+
+</style>

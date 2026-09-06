@@ -1,0 +1,77 @@
+---
+import AppShellLayout from '../../layouts/AppShellLayout.astro';
+---
+<AppShellLayout
+  title="Dashboard — EduLibre"
+  pageTitle="Dashboard institucional"
+  role="institucion"
+  active="dashboard"
+  userInitials="USB"
+  userLabel="Admin USB"
+>
+  <div class="grid-4" style="margin-bottom:28px;">
+    <div class="stat-card"><span class="num">0</span><span class="label">Carreras publicadas</span></div>
+    <div class="stat-card"><span class="num">—</span><span class="label">Vistas de perfil</span></div>
+    <div class="stat-card"><span class="num">—</span><span class="label">Veces guardado</span></div>
+    <div class="stat-card"><span class="num">Gratis</span><span class="label">Plan actual</span></div>
+  </div>
+
+  <div class="card" style="margin-bottom:24px;">
+    <h3 style="font-size:16px;margin-bottom:6px;">Completa tu perfil</h3>
+    <p style="color:var(--muted);font-size:14px;margin:0 0 14px;">Tu perfil institucional es visible para todos los estudiantes en el directorio nacional.</p>
+    <a class="btn btn--solid btn--sm" href="/institucion/editor-sitio">Editar perfil</a>
+  </div>
+
+  <div class="page-header-row" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+    <h3 style="font-size:16px;margin:0;">Tus carreras y cursos</h3>
+    <a class="btn btn--ghost btn--sm" href="/institucion/catalogo">Ver catálogo completo →</a>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Carrera / Curso</th><th>Modalidad</th><th>Duración</th><th>Estado</th></tr></thead>
+      <tbody id="dash-programs-body">
+        <tr><td colspan="4" style="text-align:center;padding:24px;color:var(--muted);">Cargando carreras...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</AppShellLayout>
+
+<script type="module">
+  async function loadDashboard() {
+    let token = localStorage.getItem('auth_token');
+    try {
+      const raw = localStorage.getItem('user_session');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (!token && parsed?.token) token = parsed.token;
+      }
+    } catch(e){}
+
+    try {
+      const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+      const res = await fetch('/api/programs', { headers });
+      const result = await res.json();
+      const programs = result.data || (Array.isArray(result) ? result : []);
+      const tbody = document.getElementById('dash-programs-body');
+      if (!tbody) return;
+
+      if (programs.length > 0) {
+        const numEl = document.querySelector('.stat-card .num');
+        if (numEl) numEl.textContent = programs.length;
+        tbody.innerHTML = programs.map(p => `
+          <tr>
+            <td><strong>${p.name}</strong></td>
+            <td><span class="badge badge--type">${p.modality || 'Presencial'}</span></td>
+            <td>${p.duration || 'Semestral'}</td>
+            <td><span class="badge" style="background:var(--green-bg);color:var(--green);">${p.is_active ? 'Publicada' : 'Pausada'}</span></td>
+          </tr>
+        `).join('');
+      } else {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--muted);">No hay carreras publicadas aún.</td></tr>`;
+      }
+    } catch(e) {
+      console.error('Error cargando carreras del dashboard', e);
+    }
+  }
+  loadDashboard();
+</script>

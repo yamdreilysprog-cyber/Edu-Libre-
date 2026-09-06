@@ -1,0 +1,132 @@
+---
+import AppShellLayout from '../../layouts/AppShellLayout.astro';
+import { createAstroSupabaseClient } from '../../lib/supabaseServer';
+
+const supabase = createAstroSupabaseClient(Astro);
+const programId = Astro.url.searchParams.get('id');
+const isNew = Astro.url.searchParams.get('new') === 'true';
+
+let program = {
+  name: '',
+  type: '',
+  modality: '',
+  duration: '',
+  is_free: false,
+  description: '',
+  requirements: '',
+  study_plan: '',
+  is_active: true
+};
+
+if (programId) {
+  const { data, error } = await supabase
+    .from('programs')
+    .select('*')
+    .eq('id', programId)
+    .single();
+  
+  if (data) program = data;
+}
+---
+<AppShellLayout
+  title={isNew ? "Nueva carrera" : "Editar carrera"}
+  pageTitle={isNew ? "Nueva carrera" : `Editar: ${program.name}`}
+  role="institucion"
+  active="catalogo"
+  userInitials="USB"
+  userLabel="Admin USB"
+>
+<div class="breadcrumb"><a href="/institucion/catalogo">Catálogo</a> / {isNew ? 'Nueva carrera' : program.name}</div>
+<div class="card" style="max-width:640px;margin-top:14px;">
+<div class="field"><label>Nombre de la carrera</label><input type="text" id="name" value={program.name}/></div>
+<div class="form-row-2">
+<div class="field"><label>Tipo</label><select id="type"><option value="CARRERA">Universidad (grado)</option><option value="TSU">TSU / Técnico</option><option value="DIPLOMADO">Diplomado</option><option value="CURSO">Curso corto</option><option value="TALLER">Taller</option></select></div>
+<div class="field"><label>Modalidad</label><select id="modality"><option value="PRESENCIAL">Presencial</option><option value="ONLINE">Online</option><option value="HIBRIDA">Mixta</option></select></div>
+</div>
+<div class="field"><label>Duración (meses)</label><input type="number" id="durationMonths" value={program.durationMonths} placeholder="Ej: 12"/></div>
+<div class="field"><label>Duración (texto para mostrar)</label><input type="text" id="duration" value={program.duration} placeholder="Ej: 12 meses"/></div>
+<div class="form-row-2">
+<div class="field"><label>Área de estudio</label>
+<select id="area">
+  <option value="">Seleccione un área</option>
+  <option value="TECNOLOGIA">Tecnología</option>
+  <option value="SALUD">Salud</option>
+  <option value="ADMINISTRACION">Administración</option>
+  <option value="ARTES">Artes y Humanidades</option>
+  <option value="CIENCIAS_SOCIALES">Ciencias Sociales</option>
+</select>
+</div>
+<div class="field"><label>Costo</label><select id="isFree"><option value="false">Con matrícula</option><option value="true">Gratuita</option></select></div>
+</div>
+<div class="field"><label>Descripción</label><textarea id="description">{program.description}</textarea></div>
+
+<div class="field"><label>Plan de estudio</label><textarea id="studyPlan" placeholder="Describe el plan de estudio">{program.study_plan}</textarea></div>
+
+<div class="field">
+<label class="checkbox-row"><input id="isActive" checked={program.is_active} type="checkbox"/> Carrera visible en EduLibre</label>
+</div>
+<div style="display:flex;gap:10px;">
+<button class="btn btn--solid">Guardar cambios</button>
+<button class="btn btn--outline">Pausar publicación</button>
+</div>
+</div>
+<script>
+  const saveBtn = document.querySelector('.btn--solid');
+  
+  saveBtn.addEventListener('click', async () => {
+    const sessionRaw = localStorage.getItem('user_session');
+    const session = sessionRaw ? JSON.parse(sessionRaw) : null;
+    if (!session || !session.token) {
+        alert('Debes iniciar sesión.');
+        return;
+    }
+
+    const body = {
+        name: document.getElementById('name').value,
+        description: document.getElementById('description').value,
+        duration: document.getElementById('duration').value,
+        durationMonths: parseInt(document.getElementById('durationMonths').value),
+        modality: document.getElementById('modality').value,
+        area: document.getElementById('area').value,
+        type: document.getElementById('type').value,
+        institutionId: session.user.institutionId,
+        isFree: document.getElementById('isFree').value === 'true',
+        isActive: document.getElementById('isActive').checked,
+        study_plan: document.getElementById('studyPlan').value
+    };
+
+    // Client-side validation
+    if (!body.name || !body.description || !body.study_plan || !body.duration || !body.type || !body.modality || !body.area || isNaN(body.durationMonths)) {
+        alert('Por favor, completa todos los campos del formulario.');
+        return;
+    }
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const programId = urlParams.get('id');
+    const isNew = urlParams.get('new') === 'true';
+
+    try {
+      const response = await fetch(isNew ? '/api/programs' : `/api/programs/${programId}`, {
+        method: isNew ? 'POST' : 'PUT',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.token}` 
+        },
+        body: JSON.stringify(body)
+      });
+
+      if (response.ok) {
+        window.location.href = '/institucion/catalogo';
+      } else {
+        const errorData = await response.json();
+        console.error('Backend Error:', errorData);
+        alert('Error: ' + (errorData.error || 'Validación fallida') + (errorData.details ? ' - ' + errorData.details : ''));
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error de conexión.');
+    }
+  });
+</script>
+</script>
+</AppShellLayout>

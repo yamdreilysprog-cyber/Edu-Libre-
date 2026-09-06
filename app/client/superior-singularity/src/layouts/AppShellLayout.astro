@@ -1,0 +1,43 @@
+---
+import Sidebar from '../components/Sidebar.astro';
+import '../styles/global.css';
+
+export interface Props {
+  title: string;
+  pageTitle: string; // texto mostrado en el topbar
+  role: 'estudiante' | 'institucion' | 'admin';
+  active: string;
+  userInitials: string;
+  userLabel: string;
+  topbarExtra?: string; // slot HTML opcional junto al usuario (ej: botón "Vista previa")
+}
+const { title, pageTitle, role, active, userInitials, userLabel } = Astro.props;
+---
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{title}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;900&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-shell">
+    <Sidebar role={role} active={active} />
+    <div class="app-main">
+      <div class="topbar">
+        <span class="topbar__title">{pageTitle}</span>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <slot name="topbar-extra" />
+          <div class="topbar__user"><div class="avatar">{userInitials}</div> {userLabel}</div>
+        </div>
+      </div>
+      <div class="app-content">
+        <slot />
+      </div>
+    </div>
+  </div>
+  <script src="/app.js" is:inline></script>
+</body>
+</html>

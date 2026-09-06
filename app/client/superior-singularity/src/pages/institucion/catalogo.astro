@@ -1,0 +1,67 @@
+---
+import AppShellLayout from '../../layouts/AppShellLayout.astro';
+---
+<AppShellLayout
+  title="Catálogo de carreras — EduLibre"
+  pageTitle="Catálogo de carreras"
+  role="institucion"
+  active="catalogo"
+  userInitials="USB"
+  userLabel="Admin USB"
+>
+<div class="page-header-row">
+<span style="color:var(--muted);font-size:14px;" id="count">Cargando...</span>
+<a class="btn btn--stamp btn--sm" href="/institucion/editar-curso?new=true">+ Nueva carrera</a>
+</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Nombre</th><th>Tipo</th><th>Modalidad</th><th>Duración</th><th>Costo</th><th>Ubicación</th><th>Acreditación</th><th>Estado</th><th></th></tr></thead>
+<tbody id="programs-body">
+</tbody>
+</table>
+</div>
+
+<script>
+async function loadPrograms() {
+    const sessionRaw = localStorage.getItem('user_session');
+    const session = sessionRaw ? JSON.parse(sessionRaw) : null;
+    if (!session || !session.token) {
+        window.location.href = '/login';
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/programs', {
+            headers: { 'Authorization': `Bearer ${session.token}` }
+        });
+        const result = await response.json();
+        
+        const tbody = document.getElementById('programs-body');
+        const countSpan = document.getElementById('count');
+        
+        if (result.data) {
+            countSpan.textContent = `${result.data.length} carreras publicadas`;
+            tbody.innerHTML = result.data.map(p => `
+                <tr>
+                    <td>${p.name}</td>
+                    <td>${p.type}</td>
+                    <td>${p.modality}</td>
+                    <td>${p.duration}</td>
+                    <td>${p.is_free ? 'Gratis' : 'Pago'}</td>
+                    <td>${p.location || '-'}</td>
+                    <td>${p.accreditation || '-'}</td>
+                    <td><span class="badge ${p.is_active ? 'badge--approved' : 'badge--pending'}">${p.is_active ? 'Publicada' : 'En pausa'}</span></td>
+                    <td class="row-actions"><a class="btn btn--ghost btn--sm" href="/institucion/editar-curso?id=${p.id}">Editar</a></td>
+                </tr>
+            `).join('');
+        } else {
+            countSpan.textContent = '0 carreras publicadas';
+        }
+    } catch (e) {
+        console.error(e);
+        document.getElementById('count').textContent = 'Error al cargar';
+    }
+}
+loadPrograms();
+</script>
+</AppShellLayout>

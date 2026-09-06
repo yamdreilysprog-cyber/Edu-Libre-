@@ -1,0 +1,56 @@
+---
+import AppShellLayout from '../../layouts/AppShellLayout.astro';
+---
+<AppShellLayout
+  title="Aprobación de instituciones — EduLibre"
+  pageTitle="Aprobación de instituciones"
+  role="admin"
+  active="aprobaciones"
+  userInitials="AD"
+  userLabel="Admin"
+>
+<div class="approval-card">
+<div>
+<span class="badge badge--pending" style="margin-bottom:8px;">Pendiente hace 3 días</span>
+<h4>Instituto Universitario de Tecnología Caracas</h4>
+<div class="meta">TSU / Instituto · Pública · Distrito Capital · RIF: G-20000111-3</div>
+</div>
+<div class="row-actions">
+<button class="btn btn--outline btn--sm">Ver solicitud</button>
+<button class="btn btn--danger btn--sm">Rechazar</button>
+<button class="btn btn--solid btn--sm">Aprobar</button>
+</div>
+</div>
+<div class="approval-card">
+<div>
+<span class="badge badge--pending" style="margin-bottom:8px;">Pendiente hace 1 día</span>
+<h4>Academia Digital Venezuela</h4>
+<div class="meta">Academia / cursos · Privada · Online · RIF: J-40233211-9</div>
+</div>
+<div class="row-actions">
+<button class="btn btn--outline btn--sm">Ver solicitud</button>
+<button class="btn btn--danger btn--sm">Rechazar</button>
+<button class="btn btn--solid btn--sm">Aprobar</button>
+</div>
+</div>
+<div class="approval-card">
+<div>
+<span class="badge badge--pending" style="margin-bottom:8px;">Pendiente hoy</span>
+<h4>Colegio Universitario de Administración y Mercadeo</h4>
+<div class="meta">Universidad · Privada · Carabobo · RIF: J-00987654-1</div>
+</div>
+<div class="row-actions">
+<button class="btn btn--outline btn--sm">Ver solicitud</button>
+<button class="btn btn--danger btn--sm">Rechazar</button>
+<button class="btn btn--solid btn--sm">Aprobar</button>
+</div>
+</div>
+</AppShellLayout>
+
+<style>
+
+  .approval-card{display:flex;justify-content:space-between;align-items:flex-start;background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:14px;flex-wrap:wrap;gap:14px;}
+  .approval-card h4{font-size:15.5px;margin-bottom:4px;}
+  .approval-card .meta{font-size:13px;color:var(--muted);margin-bottom:6px;}
+
+</style>
