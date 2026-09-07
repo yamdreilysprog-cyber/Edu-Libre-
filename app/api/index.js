@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const path = require('path');
 const cors = require('cors');
 const helmet = require('helmet');
 const requestId = require('./middlewares/requestId');
@@ -41,6 +42,9 @@ app.use(cors({
 app.use(express.json({ limit: '1mb' }));
 app.use(requestId);
 
+// Servir archivos estáticos del frontend
+app.use(express.static(path.join(__dirname, '../client/superior-singularity/dist')));
+
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', requestId: req.requestId });
 });
@@ -52,6 +56,11 @@ app.use('/api/institutions', institutionRoutes);
 app.use('/api/favorites', favoriteRoutes);
 app.use('/api/programs', programRoutes);
 app.use('/api/admin', adminRoutes);
+
+// Catch-all route para SPA (Astro/React router)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/superior-singularity/dist', 'index.html'));
+});
 
 app.use(errorHandler);
 
