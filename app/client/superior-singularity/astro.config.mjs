@@ -1,6 +1,12 @@
-import { defineConfig } from 'astro/config';
+import { defineConfig, envField } from 'astro/config';
 
 export default defineConfig({
+  env: {
+    schema: {
+      PUBLIC_SUPABASE_URL: envField.string(),
+      PUBLIC_SUPABASE_ANON_KEY: envField.string(),
+    },
+  },
   output: 'static',
   vite: {
     server: {
