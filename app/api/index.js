@@ -20,7 +20,17 @@ if (missingEnvVars.length > 0) {
   process.exit(1);
 }
 
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      "default-src": ["'self'"],
+      "script-src": ["'self'", "'unsafe-inline'"],
+      "style-src": ["'self'", "'unsafe-inline'"],
+      "img-src": ["'self'", "data:", "https://*.supabase.co"],
+      "connect-src": ["'self'", "https://*.supabase.co"],
+    },
+  },
+}));
 
 const allowedOrigins = process.env.CLIENT_URL
   .split(',')
